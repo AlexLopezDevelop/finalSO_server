@@ -48,8 +48,9 @@ LoginData *destructData(char *datos) {
 
     int isCodigoPostal = false;
     int cpIndex = 0;
+    int sizeDatos = strlen(datos);
 
-    for (int i = 0; i < strlen(datos); ++i) {
+    for (int i = 0; i < sizeDatos; ++i) {
         if (datos[i] == '*') {
             loginData->nombre[i] = '\0';
             isCodigoPostal = true;
@@ -63,7 +64,7 @@ LoginData *destructData(char *datos) {
             loginData->codigoPostal[cpIndex] = datos[i];
             loginData->codigoPostal = realloc(loginData->codigoPostal, sizeof(char) * (cpIndex + 2));
             cpIndex++;
-            if (i + 1 == strlen(datos)) { // final del string
+            if (i + 1 == sizeDatos) { // final del string
                 loginData->codigoPostal[cpIndex] = '\0';
             }
         }
@@ -103,6 +104,24 @@ void registrarUsuario(LoginData * loginData) {
     guardarUsuariosRegistrados(usuarios);
 }
 
+void buscarUsuario(char * codigoPostalIntroducido){
+    Usuarios * usuarios = obtenerUsuariosRegistrados();
+    char aux[100];
+
+    sprintf(aux,"Hi han %d persones humanes a %s\n\n",usuarios->totalRegistrados,codigoPostalIntroducido);
+    display(aux);
+
+    for (int i = 0; i < usuarios->totalRegistrados; ++i) {
+        if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostalIntroducido)==0){
+            sprintf(aux,"%s ",usuarios->registrados[i].codigoPostal);
+            display(aux);
+            display(usuarios->registrados[i].nombre);
+            display("\n");
+        }
+
+    }
+}
+
 void *comprobarNombres(void *arg) {
     int clientFD = *(int *) arg;
     int salir = 0;
@@ -124,6 +143,9 @@ void *comprobarNombres(void *arg) {
                 registrarUsuario(loginData);
                 break;
             case 'S':   //search
+                display("Feta la cerca\n");
+                display(conexionData->datos);
+                buscarUsuario(conexionData->datos);
                 break;
             case 'Q':   //logout
                 display("\nCliente Desconectado!\n\n");
