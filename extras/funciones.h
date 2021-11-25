@@ -32,6 +32,7 @@
 #include <time.h>       // fecha del sistema
 #include "dirent.h"
 #include "errno.h"
+#include "stdbool.h"
 
 
 #define FILE1 "Config.dat"

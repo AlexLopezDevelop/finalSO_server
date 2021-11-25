@@ -6,7 +6,14 @@
 #define FINALSO_SERVER_FICHEROS_H
 
 #include "../modelos/configuracion.h"
+#include "../modelos/conexion.h"
+
+#define PATH_USUARIOS_REGISTRADOS "usuariosRegistrados.txt"
 
 int leerFichero(char *pathFile, Configuracion *configuracion);
+
+int leerFicheroUsuariosRegistrados(Usuarios * usuarios);
+
+int guardarUsuariosRegistrados(Usuarios * usuarios);
 
 #endif //FINALSO_SERVER_FICHEROS_H

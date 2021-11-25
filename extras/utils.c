@@ -5,15 +5,16 @@
 #include "../extras/funciones.h"
 #include "../modelos/configuracion.h"
 #include "../modelos/conexion.h"
+#include "ficheros.h"
 
 #define MAX_TRAMA_SIZE 256
 #define printF(x) write(1, x, strlen(x))
 
 int listenFD;
 
-ConexionData * guardarTrama(char * trama) {
-    ConexionData * conexionData;
-    conexionData = malloc(sizeof (ConexionData));
+ConexionData *guardarTrama(const char *trama) {
+    ConexionData *conexionData;
+    conexionData = malloc(sizeof(ConexionData));
 
     // obtener origen
     for (int i = 0; i < TRAMA_ORIGEN_SIZE; ++i) {
@@ -40,11 +41,72 @@ ConexionData * guardarTrama(char * trama) {
     return conexionData;
 }
 
+LoginData *destructData(char *datos) {
+    LoginData *loginData = malloc(sizeof(LoginData));
+    loginData->nombre = malloc(sizeof(char));
+    loginData->codigoPostal = malloc(sizeof(char));
+
+    int isCodigoPostal = false;
+    int cpIndex = 0;
+
+    for (int i = 0; i < strlen(datos); ++i) {
+        if (datos[i] == '*') {
+            loginData->nombre[i] = '\0';
+            isCodigoPostal = true;
+            i++;
+        }
+
+        if (!isCodigoPostal) {
+            loginData->nombre[i] = datos[i];
+            loginData->nombre = realloc(loginData->nombre, sizeof(char) * (i + 2));
+        } else {
+            loginData->codigoPostal[cpIndex] = datos[i];
+            loginData->codigoPostal = realloc(loginData->codigoPostal, sizeof(char) * (cpIndex + 2));
+            cpIndex++;
+            if (i + 1 == strlen(datos)) { // final del string
+                loginData->codigoPostal[cpIndex] = '\0';
+            }
+        }
+
+    }
+
+    return loginData;
+}
+
+// TODO: add to users model
+Usuarios * obtenerUsuariosRegistrados() {
+    Usuarios * usuarios = malloc(sizeof (Usuarios));
+    usuarios->conectados = malloc(sizeof (LoginData));
+    usuarios->totalConectados = 0;
+    usuarios->registrados  = malloc(sizeof (LoginData));
+    usuarios->totalRegistrados = 0;
+
+    leerFicheroUsuariosRegistrados(usuarios);
+
+    return usuarios;
+}
+
+void registrarUsuario(LoginData * loginData) {
+    Usuarios * usuarios = obtenerUsuariosRegistrados();
+
+    // obtenemos el id para el nuevo usuario
+    int userIndex = usuarios->totalRegistrados - 1;
+    loginData->id = usuarios->registrados[userIndex].id + 1;
+
+    // Añadimos usuario
+    int totalUsuarios = usuarios->totalRegistrados + 1;
+    usuarios->totalRegistrados = totalUsuarios;
+    usuarios->registrados = realloc(usuarios->registrados, sizeof(LoginData) * totalUsuarios);
+    usuarios->registrados[totalUsuarios - 1] = *loginData;
+
+    // Guardamos en fichero
+    guardarUsuariosRegistrados(usuarios);
+}
+
 void *comprobarNombres(void *arg) {
     int clientFD = *(int *) arg;
-    int salir=0;
-    ConexionData * conexionData;
-    conexionData = malloc(sizeof (ConexionData));
+    int salir = 0;
+    ConexionData *conexionData;
 
     while (salir == 0) {
         char trama[MAX_TRAMA_SIZE];
@@ -57,6 +119,9 @@ void *comprobarNombres(void *arg) {
                 display("Received login ");
                 display(conexionData->datos);
                 display("\n");
+
+                LoginData * loginData = destructData(conexionData->datos);
+                registrarUsuario(loginData);
                 break;
             case 'S':   //search
                 break;

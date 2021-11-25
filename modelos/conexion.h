@@ -13,4 +13,17 @@ typedef struct {
     char datos[TRAMA_DATA_SIZE];
 } ConexionData;
 
+typedef struct {
+    char * nombre;
+    char * codigoPostal;
+    int id;
+} LoginData;
+
+typedef struct {
+    LoginData * registrados;
+    int totalRegistrados;
+    LoginData * conectados;
+    int totalConectados;
+} Usuarios;
+
 #endif //FINALSO_CONEXION_H
