@@ -107,18 +107,29 @@ void registrarUsuario(LoginData * loginData) {
 void buscarUsuario(char * codigoPostalIntroducido){
     Usuarios * usuarios = obtenerUsuariosRegistrados();
     char aux[100];
-
-    sprintf(aux,"Hi han %d persones humanes a %s\n\n",usuarios->totalRegistrados,codigoPostalIntroducido);
-    display(aux);
+    int encontrados = 0;
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
         if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostalIntroducido)==0){
-            sprintf(aux,"%s ",usuarios->registrados[i].codigoPostal);
-            display(aux);
-            display(usuarios->registrados[i].nombre);
-            display("\n");
+            encontrados++;
         }
+    }
+    if (encontrados == 0){
+        display("No hay ningun usuario con el codigo postal ");
+        display(codigoPostalIntroducido);
+        display("\n");
+    } else {
+        sprintf(aux,"Hi han %d persones humanes a %s\n\n",encontrados,codigoPostalIntroducido);
+        display(aux);
 
+        for (int i = 0; i < usuarios->totalRegistrados; ++i) {
+            if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostalIntroducido)==0){
+                sprintf(aux,"%s ",usuarios->registrados[i].codigoPostal);
+                display(aux);
+                display(usuarios->registrados[i].nombre);
+                display("\n");
+            }
+        }
     }
 }
 
@@ -144,7 +155,9 @@ void *comprobarNombres(void *arg) {
                 break;
             case 'S':   //search
                 display("Feta la cerca\n");
+                display("datos: ");
                 display(conexionData->datos);
+                display("\n");
                 buscarUsuario(conexionData->datos);
                 break;
             case 'Q':   //logout
