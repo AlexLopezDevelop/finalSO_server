@@ -5,7 +5,6 @@
 #include "menu.h"
 #include "utils.h"
 #include "funciones.h"
-#include "../modelos/conexion.h"
 
 void *comprobarNombres(void *arg) {
     int clientFD = *(int *) arg;

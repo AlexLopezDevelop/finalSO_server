@@ -7,6 +7,7 @@
 
 #include "../modelos/configuracion.h"
 #include "../modelos/conexion.h"
+#include "usuario.h"
 
 #define PATH_USUARIOS_REGISTRADOS "usuariosRegistrados.txt"
 

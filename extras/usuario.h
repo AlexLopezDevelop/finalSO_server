@@ -5,6 +5,8 @@
 #ifndef FINALSO_SERVER_USUARIO_H
 #define FINALSO_SERVER_USUARIO_H
 
+#include "../modelos/conexion.h"
+
 typedef struct {
     LoginData * registrados;
     int totalRegistrados;
@@ -21,6 +23,6 @@ Usuarios *obtenerUsuariosRegistrados();
 
 void registrarUsuario(LoginData *loginData);
 
-ListadoUsuarios *buscarUsuarios(LoginData *loginData)
+ListadoUsuarios *buscarUsuarios(LoginData *loginData);
 
 #endif //FINALSO_SERVER_USUARIO_H

@@ -3,6 +3,8 @@
 //
 
 #include "usuario.h"
+#include "funciones.h"
+#include "ficheros.h"
 
 Usuarios *obtenerUsuariosRegistrados() {
     Usuarios *usuarios = malloc(sizeof(Usuarios));

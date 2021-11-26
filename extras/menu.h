@@ -5,6 +5,8 @@
 #ifndef FINALSO_SERVER_MENU_H
 #define FINALSO_SERVER_MENU_H
 
+#include "../modelos/conexion.h"
+
 char * opcionBuscarUsuario(ConexionData *conexionData);
 
 void *comprobarNombres(void *arg);
