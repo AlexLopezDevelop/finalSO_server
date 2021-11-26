@@ -148,10 +148,11 @@ void buscarUsuario(char * tramaDatos){
     bool isCodigoPostal = false,isId = false;
     int idIndex =0,cpIndex=0;
     int sizeDatos = strlen(tramaDatos);
-    char * nombre,*id, *codigoPostal;
-    nombre = malloc(sizeof (char));
-    id = malloc(sizeof (char));
-    codigoPostal = malloc(sizeof (char));
+
+    char * nombre = malloc(sizeof (char));
+    char * id = malloc(sizeof (char));
+    char * codigoPostal = malloc(sizeof (char));
+
     for (int i = 0; i < sizeDatos; ++i) {
         if (tramaDatos[i] == '*' && (isCodigoPostal== false && isId== false)) {
             nombre[i] = '\0';
