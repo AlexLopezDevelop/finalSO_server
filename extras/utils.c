@@ -141,6 +141,42 @@ char * obtenerTrama(char tipo, char *data) {
     return crearTrama("ATREIDES", tipo, data);
 }
 
+UsuarioLogeado * destructDataSearch(char * tramaDatos){
+    bool isCodigoPostal = false,isId = false;
+    int idIndex =0,cpIndex=0;
+    int sizeDatos = strlen(tramaDatos);
+
+    UsuarioLogeado * usuarioLogeado;
+    usuarioLogeado = malloc(sizeof (UsuarioLogeado));
+
+    for (int i = 0; i < sizeDatos; ++i) {
+        if (tramaDatos[i] == '*' && (isCodigoPostal== false && isId== false)) {
+            usuarioLogeado->nombre[i] = '\0';
+            isId =true;
+        } else if (tramaDatos[i] == '*' && isId == true){
+            usuarioLogeado->id[i] = '\0';
+            isCodigoPostal =true;
+        }else if (isCodigoPostal== false && isId== false) {
+            usuarioLogeado->nombre[i] = tramaDatos[i];
+            usuarioLogeado->nombre = realloc(usuarioLogeado->nombre, sizeof(char) * (i + 2));
+        }else if (isCodigoPostal==false && isId==true){
+            usuarioLogeado->id[idIndex] = tramaDatos[i];
+            usuarioLogeado->id = realloc(usuarioLogeado->id, sizeof(char) * (idIndex + 2));
+            idIndex++;
+        }else{
+            usuarioLogeado->codigoPostal[cpIndex] = tramaDatos[i];
+            usuarioLogeado->codigoPostal = realloc(usuarioLogeado->codigoPostal, sizeof(char) * (cpIndex + 2));
+            cpIndex++;
+            if (i + 1 == sizeDatos) { // final del string
+                usuarioLogeado->codigoPostal[cpIndex] = '\0';
+            }
+        }
+
+    }
+
+    return usuarioLogeado;
+}
+
 void buscarUsuario(char * tramaDatos){
     Usuarios * usuarios = obtenerUsuariosRegistrados();
     char aux[100],print[200];
@@ -149,34 +185,8 @@ void buscarUsuario(char * tramaDatos){
     int idIndex =0,cpIndex=0;
     int sizeDatos = strlen(tramaDatos);
 
-    char * nombre = malloc(sizeof (char));
-    char * id = malloc(sizeof (char));
-    char * codigoPostal = malloc(sizeof (char));
+    destructDataSearch(tramaDatos);
 
-    for (int i = 0; i < sizeDatos; ++i) {
-        if (tramaDatos[i] == '*' && (isCodigoPostal== false && isId== false)) {
-            nombre[i] = '\0';
-            isId =true;
-        } else if (tramaDatos[i] == '*' && isId == true){
-            id[i] = '\0';
-            isCodigoPostal =true;
-        }else if (isCodigoPostal== false && isId== false) {
-            nombre[i] = tramaDatos[i];
-            nombre = realloc(nombre, sizeof(char) * (i + 2));
-        }else if (isCodigoPostal==false && isId== true){
-            id[idIndex] = tramaDatos[i];
-            id = realloc(id, sizeof(char) * (idIndex + 2));
-            idIndex++;
-        }else{
-            codigoPostal[cpIndex] = tramaDatos[i];
-            codigoPostal = realloc(codigoPostal, sizeof(char) * (cpIndex + 2));
-            cpIndex++;
-            if (i + 1 == sizeDatos) { // final del string
-                codigoPostal[cpIndex] = '\0';
-            }
-        }
-
-    }
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
         if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostal)==0){
