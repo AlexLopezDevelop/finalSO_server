@@ -47,7 +47,7 @@ void liberarMemoria(void *ptr);
 
 char *readLineFile(int fd, char hasta);
 
-int errorAbrir(int fd, char *nombre_f);
+int errorAbrir(int fd);
 
 void readInput(char **string);
 

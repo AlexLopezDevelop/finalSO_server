@@ -14,7 +14,7 @@ int leerFichero(char *pathFile, Configuracion *configuracion) {
 
     fd = open(pathFile, O_RDONLY);
 
-    if (errorAbrir(fd, pathFile)) {
+    if (errorAbrir(fd)) {
         return 1;
     }
 
@@ -34,7 +34,7 @@ int leerFicheroUsuariosRegistrados(Usuarios * usuarios) {
 
     fd = open(PATH_USUARIOS_REGISTRADOS, O_RDONLY);
 
-    if (errorAbrir(fd, PATH_USUARIOS_REGISTRADOS)) {
+    if (errorAbrir(fd)) {
         return 1;
     }
 
@@ -73,7 +73,7 @@ int guardarUsuariosRegistrados(Usuarios * usuarios) {
     
     fd = open(PATH_USUARIOS_REGISTRADOS, O_WRONLY|O_CREAT|O_TRUNC, 00666);
 
-    if (errorAbrir(fd, PATH_USUARIOS_REGISTRADOS)) {
+    if (errorAbrir(fd)) {
         return 1;
     }
 

@@ -7,7 +7,6 @@
 #include "../modelos/conexion.h"
 #include "ficheros.h"
 
-#define MAX_TRAMA_SIZE 256
 #define printF(x) write(1, x, strlen(x))
 
 int listenFD;
@@ -103,27 +102,100 @@ void registrarUsuario(LoginData * loginData) {
     // Guardamos en fichero
     guardarUsuariosRegistrados(usuarios);
 }
+char *crearTrama(char *origen, char tipo, char *data) {
+    char *trama = NULL;
+    trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
 
-void buscarUsuario(char * codigoPostalIntroducido){
+    int origenSize= strlen(origen);
+    int tipoSize = 1;
+    int dataSize = strlen(data);
+
+    // origen
+    for (int i = 0; i < TRAMA_ORIGEN_SIZE; ++i) {
+        if (i < origenSize) {
+            trama[i] = origen[i];
+        } else {
+            trama[i] = '\0';
+        }
+    }
+
+    // tipo
+    trama[TRAMA_ORIGEN_SIZE] = tipo;
+
+
+    // data
+    int dataIndex = 0;
+
+    for (int i = TRAMA_ORIGEN_SIZE + tipoSize; i < TRAMA_DATA_SIZE; ++i) {
+        if (dataIndex < dataSize) {
+            trama[i] = data[dataIndex];
+            dataIndex++;
+        } else {
+            trama[i] = '\0';
+        }
+    }
+    return trama;
+}
+
+char * obtenerTrama(char tipo, char *data) {
+    return crearTrama("ATREIDES", tipo, data);
+}
+
+void buscarUsuario(char * tramaDatos){
     Usuarios * usuarios = obtenerUsuariosRegistrados();
-    char aux[100];
+    char aux[100],print[200];
     int encontrados = 0;
+    bool isCodigoPostal = false,isId = false;
+    int idIndex =0,cpIndex=0;
+    int sizeDatos = strlen(tramaDatos);
+    char * nombre,*id, *codigoPostal;
+    nombre = malloc(sizeof (char));
+    id = malloc(sizeof (char));
+    codigoPostal = malloc(sizeof (char));
+    for (int i = 0; i < sizeDatos; ++i) {
+        if (tramaDatos[i] == '*' && (isCodigoPostal== false && isId== false)) {
+            nombre[i] = '\0';
+            isId =true;
+        } else if (tramaDatos[i] == '*' && isId == true){
+            id[i] = '\0';
+            isCodigoPostal =true;
+        }else if (isCodigoPostal== false && isId== false) {
+            nombre[i] = tramaDatos[i];
+            nombre = realloc(nombre, sizeof(char) * (i + 2));
+        }else if (isCodigoPostal==false && isId== true){
+            id[idIndex] = tramaDatos[i];
+            id = realloc(id, sizeof(char) * (idIndex + 2));
+            idIndex++;
+        }else{
+            codigoPostal[cpIndex] = tramaDatos[i];
+            codigoPostal = realloc(codigoPostal, sizeof(char) * (cpIndex + 2));
+            cpIndex++;
+            if (i + 1 == sizeDatos) { // final del string
+                codigoPostal[cpIndex] = '\0';
+            }
+        }
+
+    }
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
-        if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostalIntroducido)==0){
+        if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostal)==0){
             encontrados++;
         }
     }
+
+    sprintf(print,"Rebut search %s de %s %s\nFeta la cerca\n",codigoPostal,nombre,id);
+    display(print);
+
     if (encontrados == 0){
         display("No hay ningun usuario con el codigo postal ");
-        display(codigoPostalIntroducido);
+        display(codigoPostal);
         display("\n");
     } else {
-        sprintf(aux,"Hi han %d persones humanes a %s\n\n",encontrados,codigoPostalIntroducido);
+        sprintf(aux,"Hi han %d persones humanes a %s\n\n",encontrados,codigoPostal);
         display(aux);
 
         for (int i = 0; i < usuarios->totalRegistrados; ++i) {
-            if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostalIntroducido)==0){
+            if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostal)==0){
                 sprintf(aux,"%s ",usuarios->registrados[i].codigoPostal);
                 display(aux);
                 display(usuarios->registrados[i].nombre);
@@ -131,11 +203,14 @@ void buscarUsuario(char * codigoPostalIntroducido){
             }
         }
     }
+    display("\n");
 }
 
 void *comprobarNombres(void *arg) {
     int clientFD = *(int *) arg;
     int salir = 0;
+    char idString[30];
+    char print[100];
     ConexionData *conexionData;
 
     while (salir == 0) {
@@ -146,18 +221,19 @@ void *comprobarNombres(void *arg) {
 
         switch (trama[15]) {
             case 'C':   //Login
-                display("Received login ");
-                display(conexionData->datos);
-                display("\n");
-
+                display("\n\nReceived login ");
                 LoginData * loginData = destructData(conexionData->datos);
+                sprintf(print,"%s %s\n",loginData->nombre,loginData->codigoPostal);
+                display(print);
                 registrarUsuario(loginData);
+                sprintf(idString,"%d",loginData->id);
+                sprintf(print,"Assigned ID %s.\n",idString);
+                display(print);
+                char * tramaRespuesta = obtenerTrama('O', idString);
+                write(clientFD,tramaRespuesta,MAX_TRAMA_SIZE);
+                display("Send answer\n\n");
                 break;
             case 'S':   //search
-                display("Feta la cerca\n");
-                display("datos: ");
-                display(conexionData->datos);
-                display("\n");
                 buscarUsuario(conexionData->datos);
                 break;
             case 'Q':   //logout

@@ -65,7 +65,7 @@ int errorArgumentos(int argc, char *argv[], int num_argumentos) {
     }
 }
 
-int errorAbrir(int fd, char *nombre_f) {
+int errorAbrir(int fd) {
     char aux[200];
 
     if (fd < 0) {
@@ -73,8 +73,6 @@ int errorAbrir(int fd, char *nombre_f) {
         display(aux);
         return 1;
     } else {
-        sprintf(aux, "\nEl fichero: %s se ha abierto correctamente\n", nombre_f);
-        display(aux);
         return 0;
     }
 }
