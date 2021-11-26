@@ -26,10 +26,4 @@ typedef struct {
     int totalConectados;
 } Usuarios;
 
-typedef struct {
-    char* nombre;
-    char * id;
-    char * codigoPostal;
-}UsuarioLogeado;
-
 #endif //FINALSO_CONEXION_H

@@ -74,11 +74,11 @@ LoginData *destructData(char *datos) {
 }
 
 // TODO: add to users model
-Usuarios * obtenerUsuariosRegistrados() {
-    Usuarios * usuarios = malloc(sizeof (Usuarios));
-    usuarios->conectados = malloc(sizeof (LoginData));
+Usuarios *obtenerUsuariosRegistrados() {
+    Usuarios *usuarios = malloc(sizeof(Usuarios));
+    usuarios->conectados = malloc(sizeof(LoginData));
     usuarios->totalConectados = 0;
-    usuarios->registrados  = malloc(sizeof (LoginData));
+    usuarios->registrados = malloc(sizeof(LoginData));
     usuarios->totalRegistrados = 0;
 
     leerFicheroUsuariosRegistrados(usuarios);
@@ -86,8 +86,8 @@ Usuarios * obtenerUsuariosRegistrados() {
     return usuarios;
 }
 
-void registrarUsuario(LoginData * loginData) {
-    Usuarios * usuarios = obtenerUsuariosRegistrados();
+void registrarUsuario(LoginData *loginData) {
+    Usuarios *usuarios = obtenerUsuariosRegistrados();
 
     // obtenemos el id para el nuevo usuario
     int userIndex = usuarios->totalRegistrados - 1;
@@ -102,11 +102,12 @@ void registrarUsuario(LoginData * loginData) {
     // Guardamos en fichero
     guardarUsuariosRegistrados(usuarios);
 }
+
 char *crearTrama(char *origen, char tipo, char *data) {
     char *trama = NULL;
     trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
 
-    int origenSize= strlen(origen);
+    int origenSize = strlen(origen);
     int tipoSize = 1;
     int dataSize = strlen(data);
 
@@ -137,84 +138,88 @@ char *crearTrama(char *origen, char tipo, char *data) {
     return trama;
 }
 
-char * obtenerTrama(char tipo, char *data) {
+char *obtenerTrama(char tipo, char *data) {
     return crearTrama("ATREIDES", tipo, data);
 }
 
-UsuarioLogeado * destructDataSearch(char * tramaDatos){
-    bool isCodigoPostal = false,isId = false;
-    int idIndex =0,cpIndex=0;
+LoginData *destructDataSearch(char *tramaDatos) {
+    bool isCodigoPostal = false, isId = false;
+    int idIndex = 0, cpIndex = 0;
     int sizeDatos = strlen(tramaDatos);
+    char auxId[100];
 
-    UsuarioLogeado * usuarioLogeado;
-    usuarioLogeado = malloc(sizeof (UsuarioLogeado));
+    LoginData *loginData;
+    loginData = malloc(sizeof(LoginData));
+    loginData->nombre = malloc(sizeof (char));
+    loginData->codigoPostal = malloc(sizeof (char));
 
     for (int i = 0; i < sizeDatos; ++i) {
-        if (tramaDatos[i] == '*' && (isCodigoPostal== false && isId== false)) {
-            usuarioLogeado->nombre[i] = '\0';
-            isId =true;
-        } else if (tramaDatos[i] == '*' && isId == true){
-            usuarioLogeado->id[i] = '\0';
-            isCodigoPostal =true;
-        }else if (isCodigoPostal== false && isId== false) {
-            usuarioLogeado->nombre[i] = tramaDatos[i];
-            usuarioLogeado->nombre = realloc(usuarioLogeado->nombre, sizeof(char) * (i + 2));
-        }else if (isCodigoPostal==false && isId==true){
-            usuarioLogeado->id[idIndex] = tramaDatos[i];
-            usuarioLogeado->id = realloc(usuarioLogeado->id, sizeof(char) * (idIndex + 2));
-            idIndex++;
-        }else{
-            usuarioLogeado->codigoPostal[cpIndex] = tramaDatos[i];
-            usuarioLogeado->codigoPostal = realloc(usuarioLogeado->codigoPostal, sizeof(char) * (cpIndex + 2));
+        if (tramaDatos[i] == '*' && (isCodigoPostal == false && isId == false)) {
+            loginData->nombre[i] = '\0';
+            isId = true;
+        } else if (tramaDatos[i] == '*' && isId == true) {
+            isCodigoPostal = true;
+        } else if (isCodigoPostal == false && isId == false) {
+            loginData->nombre[i] = tramaDatos[i];
+            loginData->nombre = realloc(loginData->nombre, sizeof(char) * (i + 2));
+        } else if (isCodigoPostal == false && isId == true) {
+                auxId[idIndex] = tramaDatos[i];
+                idIndex++;
+        } else {
+            loginData->codigoPostal[cpIndex] = tramaDatos[i];
+            loginData->codigoPostal = realloc(loginData->codigoPostal, sizeof(char) * (cpIndex + 2));
             cpIndex++;
             if (i + 1 == sizeDatos) { // final del string
-                usuarioLogeado->codigoPostal[cpIndex] = '\0';
+                loginData->codigoPostal[cpIndex] = '\0';
             }
         }
-
+        loginData->id = atoi(auxId);
     }
 
-    return usuarioLogeado;
+    return loginData;
 }
 
-void buscarUsuario(char * tramaDatos){
-    Usuarios * usuarios = obtenerUsuariosRegistrados();
-    char aux[100],print[200];
+int buscarUsuario(LoginData *loginData) {
+    Usuarios *usuarios = obtenerUsuariosRegistrados();
+    char aux[100], print[200];
     int encontrados = 0;
-    bool isCodigoPostal = false,isId = false;
-    int idIndex =0,cpIndex=0;
-    int sizeDatos = strlen(tramaDatos);
-
-    destructDataSearch(tramaDatos);
-
-
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
-        if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostal)==0){
+        if (strcmp(usuarios->registrados[i].codigoPostal, loginData->codigoPostal) == 0) {
             encontrados++;
         }
     }
 
-    sprintf(print,"Rebut search %s de %s %s\nFeta la cerca\n",codigoPostal,nombre,id);
+    sprintf(print, "Rebut search %s de %s %d\nFeta la cerca\n", loginData->codigoPostal, loginData->nombre,
+            loginData->id);
     display(print);
 
-    if (encontrados == 0){
+    if (encontrados == 0) {
         display("No hay ningun usuario con el codigo postal ");
-        display(codigoPostal);
+        display(loginData->codigoPostal);
         display("\n");
-    } else {
-        sprintf(aux,"Hi han %d persones humanes a %s\n\n",encontrados,codigoPostal);
-        display(aux);
+        return 1;
+    }
 
-        for (int i = 0; i < usuarios->totalRegistrados; ++i) {
-            if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostal)==0){
-                sprintf(aux,"%s ",usuarios->registrados[i].codigoPostal);
-                display(aux);
-                display(usuarios->registrados[i].nombre);
-                display("\n");
-            }
+    sprintf(aux, "Hi han %d persones humanes a %s\n\n", encontrados, loginData->codigoPostal);
+    display(aux);
+
+    for (int i = 0; i < usuarios->totalRegistrados; ++i) {
+        if (strcmp(usuarios->registrados[i].codigoPostal, loginData->codigoPostal) == 0) {
+            sprintf(aux, "%s ", usuarios->registrados[i].codigoPostal);
+            display(aux);
+            display(usuarios->registrados[i].nombre);
+            display("\n");
         }
     }
+
+
     display("\n");
+    return 0;
+}
+
+void opcionBuscarUsuario(ConexionData *conexionData) {
+    LoginData *loginData = destructDataSearch(conexionData->datos);
+    buscarUsuario(loginData);
 }
 
 void *comprobarNombres(void *arg) {
@@ -233,19 +238,21 @@ void *comprobarNombres(void *arg) {
         switch (trama[15]) {
             case 'C':   //Login
                 display("\n\nReceived login ");
-                LoginData * loginData = destructData(conexionData->datos);
-                sprintf(print,"%s %s\n",loginData->nombre,loginData->codigoPostal);
+                LoginData *loginData = destructData(conexionData->datos);
+                sprintf(print, "%s %s\n", loginData->nombre, loginData->codigoPostal);
                 display(print);
+                // TODO: revisar si existe
+                // buscarUsuario()
                 registrarUsuario(loginData);
-                sprintf(idString,"%d",loginData->id);
-                sprintf(print,"Assigned ID %s.\n",idString);
+                sprintf(idString, "%d", loginData->id);
+                sprintf(print, "Assigned ID %s.\n", idString);
                 display(print);
-                char * tramaRespuesta = obtenerTrama('O', idString);
-                write(clientFD,tramaRespuesta,MAX_TRAMA_SIZE);
+                char *tramaRespuesta = obtenerTrama('O', idString);
+                write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 display("Send answer\n\n");
                 break;
             case 'S':   //search
-                buscarUsuario(conexionData->datos);
+                opcionBuscarUsuario(conexionData);
                 break;
             case 'Q':   //logout
                 display("\nCliente Desconectado!\n\n");
