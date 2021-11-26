@@ -149,7 +149,7 @@ UsuarioLogeado * destructDataSearch(char * tramaDatos){
     UsuarioLogeado * usuarioLogeado;
     usuarioLogeado = malloc(sizeof (UsuarioLogeado));
 
-    for (int i = 0; i < sizeDatos; ++i) {
+    for (int i = 1; i < sizeDatos; ++i) {
         if (tramaDatos[i] == '*' && (isCodigoPostal== false && isId== false)) {
             usuarioLogeado->nombre[i] = '\0';
             isId =true;
@@ -171,9 +171,7 @@ UsuarioLogeado * destructDataSearch(char * tramaDatos){
                 usuarioLogeado->codigoPostal[cpIndex] = '\0';
             }
         }
-
     }
-
     return usuarioLogeado;
 }
 
@@ -181,32 +179,29 @@ void buscarUsuario(char * tramaDatos){
     Usuarios * usuarios = obtenerUsuariosRegistrados();
     char aux[100],print[200];
     int encontrados = 0;
-    bool isCodigoPostal = false,isId = false;
-    int idIndex =0,cpIndex=0;
-    int sizeDatos = strlen(tramaDatos);
 
-    destructDataSearch(tramaDatos);
+    UsuarioLogeado * usuarioLogeado = destructDataSearch(tramaDatos);
 
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
-        if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostal)==0){
+        if(strcmp(usuarios->registrados[i].codigoPostal,usuarioLogeado->codigoPostal)==0){
             encontrados++;
         }
     }
 
-    sprintf(print,"Rebut search %s de %s %s\nFeta la cerca\n",codigoPostal,nombre,id);
+    sprintf(print,"Rebut search %s de %s %s\nFeta la cerca\n",usuarioLogeado->codigoPostal,usuarioLogeado->nombre,usuarioLogeado->id);
     display(print);
 
     if (encontrados == 0){
         display("No hay ningun usuario con el codigo postal ");
-        display(codigoPostal);
+        display(usuarioLogeado->codigoPostal);
         display("\n");
     } else {
-        sprintf(aux,"Hi han %d persones humanes a %s\n\n",encontrados,codigoPostal);
+        sprintf(aux,"Hi han %d persones humanes a %s\n\n",encontrados,usuarioLogeado->codigoPostal);
         display(aux);
 
         for (int i = 0; i < usuarios->totalRegistrados; ++i) {
-            if(strcmp(usuarios->registrados[i].codigoPostal,codigoPostal)==0){
+            if(strcmp(usuarios->registrados[i].codigoPostal,usuarioLogeado->codigoPostal)==0){
                 sprintf(aux,"%s ",usuarios->registrados[i].codigoPostal);
                 display(aux);
                 display(usuarios->registrados[i].nombre);
