@@ -26,4 +26,9 @@ typedef struct {
     int totalConectados;
 } Usuarios;
 
+typedef struct {
+    LoginData * usuarios;
+    int total;
+} ListadoUsuarios;
+
 #endif //FINALSO_CONEXION_H

@@ -150,8 +150,8 @@ LoginData *destructDataSearch(char *tramaDatos) {
 
     LoginData *loginData;
     loginData = malloc(sizeof(LoginData));
-    loginData->nombre = malloc(sizeof (char));
-    loginData->codigoPostal = malloc(sizeof (char));
+    loginData->nombre = malloc(sizeof(char));
+    loginData->codigoPostal = malloc(sizeof(char));
 
     for (int i = 0; i < sizeDatos; ++i) {
         if (tramaDatos[i] == '*' && (isCodigoPostal == false && isId == false)) {
@@ -163,8 +163,8 @@ LoginData *destructDataSearch(char *tramaDatos) {
             loginData->nombre[i] = tramaDatos[i];
             loginData->nombre = realloc(loginData->nombre, sizeof(char) * (i + 2));
         } else if (isCodigoPostal == false && isId == true) {
-                auxId[idIndex] = tramaDatos[i];
-                idIndex++;
+            auxId[idIndex] = tramaDatos[i];
+            idIndex++;
         } else {
             loginData->codigoPostal[cpIndex] = tramaDatos[i];
             loginData->codigoPostal = realloc(loginData->codigoPostal, sizeof(char) * (cpIndex + 2));
@@ -179,47 +179,98 @@ LoginData *destructDataSearch(char *tramaDatos) {
     return loginData;
 }
 
-int buscarUsuario(LoginData *loginData) {
+ListadoUsuarios *buscarUsuarios(LoginData *loginData) {
     Usuarios *usuarios = obtenerUsuariosRegistrados();
-    char aux[100], print[200];
-    int encontrados = 0;
+    ListadoUsuarios *listadoUsuarios = malloc(sizeof(ListadoUsuarios));
+    listadoUsuarios->usuarios = malloc(sizeof(Usuarios));
+    listadoUsuarios->total = 0;
+
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
         if (strcmp(usuarios->registrados[i].codigoPostal, loginData->codigoPostal) == 0) {
-            encontrados++;
+
+            listadoUsuarios->total++;
+            listadoUsuarios->usuarios = realloc(listadoUsuarios->usuarios, sizeof(Usuarios) * listadoUsuarios->total);
+            listadoUsuarios->usuarios[listadoUsuarios->total - 1] = usuarios->registrados[i];
         }
     }
+
+    return listadoUsuarios;
+}
+
+char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
+    char * data = malloc(sizeof (char));
+    char stringAux [100];
+    int dataSize;
+
+    // total usuarios
+    sprintf(stringAux, "%d", listadoUsuarios->total);
+    dataSize = strlen(stringAux);
+    data = realloc(data, sizeof (char) * dataSize);
+    strcpy(data, stringAux);
+
+    // *
+    dataSize++;
+    data = realloc(data, sizeof (char) * dataSize);
+    strcat(data, "*");
+
+    // Usuarios
+    for (int i = 0; i < listadoUsuarios->total; ++i) {
+
+        // Nombre
+        dataSize = dataSize + strlen(listadoUsuarios->usuarios[i].nombre);
+        data = realloc(data, sizeof (char) * dataSize);
+        strcat(data, listadoUsuarios->usuarios[i].nombre);
+
+        // *
+        dataSize++;
+        data = realloc(data, sizeof (char) * dataSize);
+        strcat(data, "*");
+
+        // id
+        sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
+        dataSize = dataSize + strlen(stringAux);
+        data = realloc(data, sizeof (char) * dataSize);
+        strcat(data, stringAux);
+
+        // controlar asterisco final
+        if (listadoUsuarios->total - 1 != i) {
+            // *
+            dataSize++;
+            data = realloc(data, sizeof (char) * dataSize);
+            strcat(data, "*");
+        }
+    }
+
+    return data;
+}
+
+char * opcionBuscarUsuario(ConexionData *conexionData) {
+    LoginData *loginData = destructDataSearch(conexionData->datos);
+    ListadoUsuarios *listadoUsuarios = buscarUsuarios(loginData);
+    char print[200];
 
     sprintf(print, "Rebut search %s de %s %d\nFeta la cerca\n", loginData->codigoPostal, loginData->nombre,
             loginData->id);
     display(print);
 
-    if (encontrados == 0) {
+    if (listadoUsuarios->total == 0) {
         display("No hay ningun usuario con el codigo postal ");
         display(loginData->codigoPostal);
         display("\n");
-        return 1;
-    }
+    } else {
+        sprintf(print, "Hi han %d persones humanes a %s\n\n", listadoUsuarios->total, loginData->codigoPostal);
+        display(print);
+        display("\n");
 
-    sprintf(aux, "Hi han %d persones humanes a %s\n\n", encontrados, loginData->codigoPostal);
-    display(aux);
-
-    for (int i = 0; i < usuarios->totalRegistrados; ++i) {
-        if (strcmp(usuarios->registrados[i].codigoPostal, loginData->codigoPostal) == 0) {
-            sprintf(aux, "%s ", usuarios->registrados[i].codigoPostal);
-            display(aux);
-            display(usuarios->registrados[i].nombre);
+        for (int i = 0; i < listadoUsuarios->total; ++i) {
+            sprintf(print, "%s ", listadoUsuarios->usuarios[i].codigoPostal);
+            display(print);
+            display(listadoUsuarios->usuarios[i].nombre);
             display("\n");
         }
     }
 
-
-    display("\n");
-    return 0;
-}
-
-void opcionBuscarUsuario(ConexionData *conexionData) {
-    LoginData *loginData = destructDataSearch(conexionData->datos);
-    buscarUsuario(loginData);
+    return crearDataSearch(listadoUsuarios);
 }
 
 void *comprobarNombres(void *arg) {
@@ -242,7 +293,7 @@ void *comprobarNombres(void *arg) {
                 sprintf(print, "%s %s\n", loginData->nombre, loginData->codigoPostal);
                 display(print);
                 // TODO: revisar si existe
-                // buscarUsuario()
+                // buscarUsuarios()
                 registrarUsuario(loginData);
                 sprintf(idString, "%d", loginData->id);
                 sprintf(print, "Assigned ID %s.\n", idString);
@@ -252,7 +303,9 @@ void *comprobarNombres(void *arg) {
                 display("Send answer\n\n");
                 break;
             case 'S':   //search
-                opcionBuscarUsuario(conexionData);
+                display("Buscando usuarios\n");
+                char *data = opcionBuscarUsuario(conexionData);
+                // TODO: devolver data al usuario
                 break;
             case 'Q':   //logout
                 display("\nCliente Desconectado!\n\n");
