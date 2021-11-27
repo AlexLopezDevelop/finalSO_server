@@ -29,4 +29,6 @@ int obtenerIdUsuario(LoginData * loginData);
 
 int usuarioExiste(LoginData * loginData);
 
+void mensajeDesconectadoUsuario(char * datos);
+
 #endif //FINALSO_SERVER_USUARIO_H

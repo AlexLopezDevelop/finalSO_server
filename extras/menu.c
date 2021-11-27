@@ -62,8 +62,8 @@ void *comprobarNombres(void *arg) {
                 if (!usuarioExiste(loginData)) {
                     // TODO: enviar error al cliente y romper el fujo (return/break)
                 }
-
-                display("\nCliente Desconectado!\n\n");
+                mensajeDesconectadoUsuario(conexionData->datos);
+                display("Cliente Desconectado!\n\n");
                 close(clientFD);
                 salir = 1;//Logout
                 break;

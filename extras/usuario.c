@@ -79,3 +79,21 @@ int usuarioExiste(LoginData * loginData) {
     }
     return false;
 }
+
+void mensajeDesconectadoUsuario(char *datos){
+    char *nombre;
+    char lineaFile[50], print[100];
+    char * id;
+    int indexId=0;
+    strcpy(lineaFile,readStringTo(datos,'*'));
+    nombre = malloc(strlen(lineaFile));
+    id = malloc(sizeof (char));
+    strcpy(nombre,lineaFile);
+    for (int i = strlen(lineaFile) + 1; i < strlen(datos) ; ++i) {
+        id[indexId] = datos[i];
+        indexId++;
+        id = realloc(id,sizeof (char)*indexId);
+    }
+    sprintf(print,"Rebut logout de %s %s\n",nombre,id);
+    display(print);
+}
