@@ -12,6 +12,7 @@ void *comprobarNombres(void *arg) {
     char idString[30];
     char print[100];
     ConexionData *conexionData;
+    char *tramaRespuesta;
 
     while (salir == 0) {
         char trama[MAX_TRAMA_SIZE];
@@ -36,18 +37,26 @@ void *comprobarNombres(void *arg) {
                 sprintf(idString, "%d", loginData->id);
                 sprintf(print, "Assigned ID %s.\n", idString);
                 display(print);
-                char *tramaRespuesta = obtenerTrama('O', idString);
+                tramaRespuesta = obtenerTrama('O', idString);
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 display("Send answer\n\n");
                 break;
             case 'S':  //search
                 if (!usuarioExiste(loginData)) {
-                    // TODO: enviar error al cliente y romper el fujo (return/break)
+                    tramaRespuesta = obtenerTrama('K', "0");
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    break;
                 }
-
                 display("Buscando usuarios\n");
                 char *data = opcionBuscarUsuario(conexionData);
-                // TODO: devolver data al usuario
+                if (data[0] != '0') {
+                    tramaRespuesta = obtenerTrama('L', data);
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    display("\nSend answer\n\n");
+                } else {
+                    tramaRespuesta = obtenerTrama('K', data);
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                }
                 break;
             case 'Q':   //logout
                 if (!usuarioExiste(loginData)) {
@@ -72,6 +81,7 @@ char * opcionBuscarUsuario(ConexionData *conexionData) {
     LoginData *loginData = destructDataSearch(conexionData->datos);
     ListadoUsuarios *listadoUsuarios = buscarUsuarios(loginData);
     char print[200];
+    char auxid[30];
 
     sprintf(print, "Rebut search %s de %s %d\nFeta la cerca\n", loginData->codigoPostal, loginData->nombre,
             loginData->id);
@@ -82,12 +92,13 @@ char * opcionBuscarUsuario(ConexionData *conexionData) {
         display(loginData->codigoPostal);
         display("\n");
     } else {
-        sprintf(print, "Hi han %d persones humanes a %s\n\n", listadoUsuarios->total, loginData->codigoPostal);
+        sprintf(print, "Hi han %d persones humanes a %s\n", listadoUsuarios->total, loginData->codigoPostal);
         display(print);
         display("\n");
 
         for (int i = 0; i < listadoUsuarios->total; ++i) {
-            sprintf(print, "%s ", listadoUsuarios->usuarios[i].codigoPostal);
+            sprintf(auxid,"%d",listadoUsuarios->usuarios[i].id);
+            sprintf(print, "%s ", auxid);
             display(print);
             display(listadoUsuarios->usuarios[i].nombre);
             display("\n");

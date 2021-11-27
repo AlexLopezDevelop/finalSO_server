@@ -77,6 +77,5 @@ int usuarioExiste(LoginData * loginData) {
             return true;
         }
     }
-
     return false;
 }

@@ -167,32 +167,37 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
     strcat(data, "*");
 
     // Usuarios
-    for (int i = 0; i < listadoUsuarios->total; ++i) {
+    if (listadoUsuarios->total != 0){
+        for (int i = 0; i < listadoUsuarios->total; ++i) {
 
-        // Nombre
-        dataSize = dataSize + strlen(listadoUsuarios->usuarios[i].nombre);
-        data = realloc(data, sizeof (char) * dataSize);
-        strcat(data, listadoUsuarios->usuarios[i].nombre);
+            // Nombre
+            dataSize = dataSize + strlen(listadoUsuarios->usuarios[i].nombre);
+            data = realloc(data, sizeof (char) * dataSize);
+            strcat(data, listadoUsuarios->usuarios[i].nombre);
 
-        // *
-        dataSize++;
-        data = realloc(data, sizeof (char) * dataSize);
-        strcat(data, "*");
-
-        // id
-        sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
-        dataSize = dataSize + strlen(stringAux);
-        data = realloc(data, sizeof (char) * dataSize);
-        strcat(data, stringAux);
-
-        // controlar asterisco final
-        if (listadoUsuarios->total - 1 != i) {
             // *
             dataSize++;
             data = realloc(data, sizeof (char) * dataSize);
             strcat(data, "*");
+
+            // id
+            sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
+            dataSize = dataSize + strlen(stringAux);
+            data = realloc(data, sizeof (char) * dataSize);
+            strcat(data, stringAux);
+
+            // controlar asterisco final
+            if (listadoUsuarios->total - 1 != i) {
+                // *
+                dataSize++;
+                data = realloc(data, sizeof (char) * dataSize);
+                strcat(data, "*");
+            }
         }
+    } else {
+        data = "0";
     }
+
 
     return data;
 }
