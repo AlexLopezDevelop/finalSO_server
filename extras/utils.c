@@ -171,9 +171,11 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
         for (int i = 0; i < listadoUsuarios->total; ++i) {
 
             // Nombre
-            dataSize = dataSize + strlen(listadoUsuarios->usuarios[i].nombre);
-            data = realloc(data, sizeof (char) * dataSize);
-            strcat(data, "paco"/*listadoUsuarios->usuarios[i].nombre*/);
+            for (int j = 0; j < strlen(listadoUsuarios->usuarios[i].nombre); ++j) {
+                dataSize++;
+                data = realloc(data, sizeof (char) * dataSize);
+                data[dataSize - 1] = listadoUsuarios->usuarios[i].nombre[j];
+            }
 
             // *
             dataSize++;
@@ -181,10 +183,12 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
             data[dataSize - 1] = '*';
 
             // id
-            sprintf(stringAux, "%d", 2/*listadoUsuarios->usuarios[i].id*/);
-            dataSize = dataSize + strlen(stringAux);
-            data = realloc(data, sizeof (char) * dataSize);
-            strcat(data, stringAux);
+            sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
+            for (int j = 0; j < strlen(stringAux); ++j) {
+                dataSize++;
+                data = realloc(data, sizeof (char) * dataSize);
+                data[dataSize - 1] = stringAux[j];
+            }
 
             // controlar asterisco final
             if (listadoUsuarios->total - 1 != i) {
