@@ -25,4 +25,6 @@ void registrarUsuario(LoginData *loginData);
 
 ListadoUsuarios *buscarUsuarios(LoginData *loginData);
 
+int obtenerIdUsuario(LoginData * loginData);
+
 #endif //FINALSO_SERVER_USUARIO_H

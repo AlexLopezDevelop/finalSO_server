@@ -52,3 +52,19 @@ ListadoUsuarios *buscarUsuarios(LoginData *loginData) {
 
     return listadoUsuarios;
 }
+
+int obtenerIdUsuario(LoginData * loginData) {
+    Usuarios * usuarios = obtenerUsuariosRegistrados();
+    int mismoNombre, mismoCodigoPostal;
+
+    for (int i = 0; i < usuarios->totalRegistrados; ++i) {
+        mismoNombre = strcmp(usuarios->registrados[i].nombre, loginData->nombre) == 0;
+        mismoCodigoPostal = strcmp(usuarios->registrados[i].codigoPostal, loginData->codigoPostal) == 0;
+
+        if (mismoNombre && mismoCodigoPostal) {
+            return usuarios->registrados[i].id;
+        }
+    }
+
+    return 0;
+}

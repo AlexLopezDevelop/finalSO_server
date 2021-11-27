@@ -25,9 +25,14 @@ void *comprobarNombres(void *arg) {
                 LoginData *loginData = destructData(conexionData->datos);
                 sprintf(print, "%s %s\n", loginData->nombre, loginData->codigoPostal);
                 display(print);
-                // TODO: revisar si existe
-                // buscarUsuarios()
-                registrarUsuario(loginData);
+
+                loginData->id = obtenerIdUsuario(loginData);
+
+                // revisar si no existe, no tiene id
+                if (loginData->id == 0) {
+                    registrarUsuario(loginData);
+                }
+
                 sprintf(idString, "%d", loginData->id);
                 sprintf(print, "Assigned ID %s.\n", idString);
                 display(print);
