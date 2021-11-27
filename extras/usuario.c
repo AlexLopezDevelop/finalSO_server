@@ -68,3 +68,15 @@ int obtenerIdUsuario(LoginData * loginData) {
 
     return 0;
 }
+
+int usuarioExiste(LoginData * loginData) {
+    Usuarios * usuarios = obtenerUsuariosRegistrados();
+
+    for (int i = 0; i < usuarios->totalRegistrados; ++i) {
+        if (usuarios->registrados[i].id == loginData->id) {
+            return true;
+        }
+    }
+
+    return false;
+}

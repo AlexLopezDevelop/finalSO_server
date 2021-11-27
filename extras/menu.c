@@ -40,12 +40,20 @@ void *comprobarNombres(void *arg) {
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 display("Send answer\n\n");
                 break;
-            case 'S':   //search
+            case 'S':  //search
+                if (!usuarioExiste(loginData)) {
+                    // TODO: enviar error al cliente y romper el fujo (return/break)
+                }
+
                 display("Buscando usuarios\n");
                 char *data = opcionBuscarUsuario(conexionData);
                 // TODO: devolver data al usuario
                 break;
             case 'Q':   //logout
+                if (!usuarioExiste(loginData)) {
+                    // TODO: enviar error al cliente y romper el fujo (return/break)
+                }
+
                 display("\nCliente Desconectado!\n\n");
                 close(clientFD);
                 salir = 1;//Logout

@@ -27,4 +27,6 @@ ListadoUsuarios *buscarUsuarios(LoginData *loginData);
 
 int obtenerIdUsuario(LoginData * loginData);
 
+int usuarioExiste(LoginData * loginData);
+
 #endif //FINALSO_SERVER_USUARIO_H
