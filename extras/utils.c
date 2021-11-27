@@ -164,7 +164,7 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
     // *
     dataSize++;
     data = realloc(data, sizeof (char) * dataSize);
-    strcat(data, "*");
+    data[dataSize - 1] = '*';
 
     // Usuarios
     if (listadoUsuarios->total != 0){
@@ -173,15 +173,15 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
             // Nombre
             dataSize = dataSize + strlen(listadoUsuarios->usuarios[i].nombre);
             data = realloc(data, sizeof (char) * dataSize);
-            strcat(data, listadoUsuarios->usuarios[i].nombre);
+            strcat(data, "paco"/*listadoUsuarios->usuarios[i].nombre*/);
 
             // *
             dataSize++;
             data = realloc(data, sizeof (char) * dataSize);
-            strcat(data, "*");
+            data[dataSize - 1] = '*';
 
             // id
-            sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
+            sprintf(stringAux, "%d", 2/*listadoUsuarios->usuarios[i].id*/);
             dataSize = dataSize + strlen(stringAux);
             data = realloc(data, sizeof (char) * dataSize);
             strcat(data, stringAux);
@@ -191,7 +191,7 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
                 // *
                 dataSize++;
                 data = realloc(data, sizeof (char) * dataSize);
-                strcat(data, "*");
+                data[dataSize - 1] = '*';
             }
         }
     } else {
