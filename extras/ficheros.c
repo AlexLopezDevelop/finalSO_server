@@ -3,7 +3,6 @@
 //
 
 #include "ficheros.h"
-#include "../extras/funciones.h"
 
 
 #define MAX_LINEA_FILE 200

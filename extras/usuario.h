@@ -5,19 +5,9 @@
 #ifndef FINALSO_SERVER_USUARIO_H
 #define FINALSO_SERVER_USUARIO_H
 
+#include "ficheros.h"
+#include "funciones.h"
 #include "../modelos/conexion.h"
-
-typedef struct {
-    LoginData * registrados;
-    int totalRegistrados;
-    LoginData * conectados;
-    int totalConectados;
-} Usuarios;
-
-typedef struct {
-    LoginData * usuarios;
-    int total;
-} ListadoUsuarios;
 
 Usuarios *obtenerUsuariosRegistrados();
 

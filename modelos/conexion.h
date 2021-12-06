@@ -19,4 +19,16 @@ typedef struct {
     int id;
 } LoginData;
 
+typedef struct {
+    LoginData * registrados;
+    int totalRegistrados;
+    LoginData * conectados;
+    int totalConectados;
+} Usuarios;
+
+typedef struct {
+    LoginData * usuarios;
+    int total;
+} ListadoUsuarios;
+
 #endif //FINALSO_CONEXION_H

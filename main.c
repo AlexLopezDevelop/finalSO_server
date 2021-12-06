@@ -2,7 +2,6 @@
 #include "extras/funciones.h"
 #include "extras/ficheros.h"
 #include "extras/utils.h"
-#include "modelos/conexion.h"
 
 #define printF(x) write(1, x, strlen(x))
 

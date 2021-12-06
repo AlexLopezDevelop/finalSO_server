@@ -5,9 +5,9 @@
 #ifndef FINALSO_SERVER_FICHEROS_H
 #define FINALSO_SERVER_FICHEROS_H
 
+#include "funciones.h"
 #include "../modelos/configuracion.h"
 #include "../modelos/conexion.h"
-#include "usuario.h"
 
 #define PATH_USUARIOS_REGISTRADOS "usuariosRegistrados.txt"
 

@@ -2,10 +2,8 @@
 // Created by Alex Lopez on 13/11/21.
 //
 
-#include "../extras/funciones.h"
-#include "../modelos/configuracion.h"
-#include "../modelos/conexion.h"
-#include "usuario.h"
+#include "utils.h"
+#include "funciones.h"
 #include "menu.h"
 
 #define printF(x) write(1, x, strlen(x))
@@ -154,6 +152,8 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
     char * data = malloc(sizeof (char));
     char stringAux [100];
     int dataSize;
+    int nombreSize;
+    int stringAuxSize;
 
     // total usuarios
     sprintf(stringAux, "%d", listadoUsuarios->total);
@@ -171,7 +171,8 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
         for (int i = 0; i < listadoUsuarios->total; ++i) {
 
             // Nombre
-            for (int j = 0; j < strlen(listadoUsuarios->usuarios[i].nombre); ++j) {
+            nombreSize = (int) strlen(listadoUsuarios->usuarios[i].nombre);
+            for (int j = 0; j < nombreSize; ++j) {
                 dataSize++;
                 data = realloc(data, sizeof (char) * dataSize);
                 data[dataSize - 1] = listadoUsuarios->usuarios[i].nombre[j];
@@ -184,7 +185,8 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
 
             // id
             sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
-            for (int j = 0; j < strlen(stringAux); ++j) {
+            stringAuxSize = (int) strlen(stringAux);
+            for (int j = 0; j < stringAuxSize; ++j) {
                 dataSize++;
                 data = realloc(data, sizeof (char) * dataSize);
                 data[dataSize - 1] = stringAux[j];

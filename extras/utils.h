@@ -6,6 +6,7 @@
 #define FINALSO_SERVER_UTILS_H
 
 #include "usuario.h"
+#include "../modelos/conexion.h"
 
 void * comprobarNombres(void * arg);
 

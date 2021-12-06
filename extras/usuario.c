@@ -3,8 +3,6 @@
 //
 
 #include "usuario.h"
-#include "funciones.h"
-#include "ficheros.h"
 
 Usuarios *obtenerUsuariosRegistrados() {
     Usuarios *usuarios = malloc(sizeof(Usuarios));
@@ -53,8 +51,8 @@ ListadoUsuarios *buscarUsuarios(LoginData *loginData) {
     return listadoUsuarios;
 }
 
-int obtenerIdUsuario(LoginData * loginData) {
-    Usuarios * usuarios = obtenerUsuariosRegistrados();
+int obtenerIdUsuario(LoginData *loginData) {
+    Usuarios *usuarios = obtenerUsuariosRegistrados();
     int mismoNombre, mismoCodigoPostal;
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
@@ -69,8 +67,8 @@ int obtenerIdUsuario(LoginData * loginData) {
     return 0;
 }
 
-int usuarioExiste(LoginData * loginData) {
-    Usuarios * usuarios = obtenerUsuariosRegistrados();
+int usuarioExiste(LoginData *loginData) {
+    Usuarios *usuarios = obtenerUsuariosRegistrados();
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
         if (usuarios->registrados[i].id == loginData->id) {
@@ -80,20 +78,25 @@ int usuarioExiste(LoginData * loginData) {
     return false;
 }
 
-void mensajeDesconectadoUsuario(char *datos){
+void mensajeDesconectadoUsuario(char *datos) {
     char *nombre;
     char lineaFile[50], print[100];
-    char * id;
-    int indexId=0;
-    strcpy(lineaFile,readStringTo(datos,'*'));
+    char *id;
+    int indexId = 0;
+    int datosSize;
+    int lineaFileSize;
+
+    strcpy(lineaFile, readStringTo(datos, '*'));
     nombre = malloc(strlen(lineaFile));
-    id = malloc(sizeof (char));
-    strcpy(nombre,lineaFile);
-    for (int i = strlen(lineaFile) + 1; i < strlen(datos) ; ++i) {
+    id = malloc(sizeof(char));
+    strcpy(nombre, lineaFile);
+    datosSize = (int) strlen(datos);
+    lineaFileSize = (int) strlen(lineaFile);
+    for (int i = lineaFileSize + 1; i < datosSize; ++i) {
         id[indexId] = datos[i];
         indexId++;
-        id = realloc(id,sizeof (char)*indexId);
+        id = realloc(id, sizeof(char) * indexId);
     }
-    sprintf(print,"Rebut logout de %s %s\n",nombre,id);
+    sprintf(print, "Rebut logout de %s %s\n", nombre, id);
     display(print);
 }
