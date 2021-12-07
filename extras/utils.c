@@ -104,6 +104,7 @@ char *crearTrama(char *origen, char tipo, char *data) {
             trama[i] = '\0';
         }
     }
+
     return trama;
 }
 

@@ -13,62 +13,77 @@ void *comprobarNombres(void *arg) {
     char print[100];
     ConexionData *conexionData;
     char *tramaRespuesta;
+    char *trama = NULL;
+    int valread;
 
-    while (salir == 0) {
-        char trama[MAX_TRAMA_SIZE];
-        read(clientFD, trama, MAX_TRAMA_SIZE);
+    while (salir != 1) {
+        trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
 
-        conexionData = guardarTrama(trama);
+        valread = read(clientFD, trama, MAX_TRAMA_SIZE);
 
-        switch (trama[15]) {
-            case 'C':   //Login
-                display("\n\nReceived login ");
-                LoginData *loginData = destructData(conexionData->datos);
-                sprintf(print, "%s %s\n", loginData->nombre, loginData->codigoPostal);
-                display(print);
+        if (valread == MAX_TRAMA_SIZE) {
 
-                loginData->id = obtenerIdUsuario(loginData);
+            display("CASSEY");
+            display("\n");
 
-                // revisar si no existe, no tiene id
-                if (loginData->id == 0) {
-                    registrarUsuario(loginData);
-                }
+            conexionData = guardarTrama(trama);
 
-                sprintf(idString, "%d", loginData->id);
-                sprintf(print, "Assigned ID %s.\n", idString);
-                display(print);
-                tramaRespuesta = obtenerTrama('O', idString);
-                write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                display("Send answer\n\n");
-                break;
-            case 'S':  //search
-                if (!usuarioExiste(loginData)) {
-                    tramaRespuesta = obtenerTrama('K', "0");
+            switch (trama[15]) {
+                case 'C':   //Login
+                    display("\n\nReceived login ");
+                    LoginData *loginData = destructData(conexionData->datos);
+                    sprintf(print, "%s %s\n", loginData->nombre, loginData->codigoPostal);
+                    display(print);
+
+                    loginData->id = obtenerIdUsuario(loginData);
+
+                    // revisar si no existe, no tiene id
+                    if (loginData->id == 0) {
+                        registrarUsuario(loginData);
+                    }
+
+                    sprintf(idString, "%d", loginData->id);
+                    sprintf(print, "Assigned ID %s.\n", idString);
+                    display(print);
+                    tramaRespuesta = obtenerTrama('O', idString);
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    display("Send answer\n\n");
                     break;
-                }
-                display("Buscando usuarios\n");
-                char *data = opcionBuscarUsuario(conexionData);
-                if (data[0] != '0') {
-                    tramaRespuesta = obtenerTrama('L', data);
-                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    display("\nSend answer\n\n");
-                } else {
-                    tramaRespuesta = obtenerTrama('K', data);
-                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                }
-                break;
-            case 'Q':   //logout
-                if (!usuarioExiste(loginData)) {
-                    // TODO: enviar error al cliente y romper el fujo (return/break)
-                }
-                mensajeDesconectadoUsuario(conexionData->datos);
-                display("Cliente Desconectado!\n\n");
-                close(clientFD);
-                salir = 1;//Logout
-                break;
+                case 'S':  //search
+                    display("MANOLO");
+                    display("\n");
+                    if (!usuarioExiste(loginData)) {
+                        tramaRespuesta = obtenerTrama('K', "0");
+                        write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                        break;
+                    }
+                    display("Buscando usuarios\n");
+                    char *data = opcionBuscarUsuario(conexionData);
+                    if (data[0] != '0') {
+                        tramaRespuesta = obtenerTrama('L', data);
+                        write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                        display("\nSend answer\n\n");
+                    } else {
+                        tramaRespuesta = obtenerTrama('K', data);
+                        write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    }
+
+                    break;
+                case 'Q':   //logout
+                    if (!usuarioExiste(loginData)) {
+                        // TODO: enviar error al cliente y romper el fujo (return/break)
+                    }
+                    mensajeDesconectadoUsuario(conexionData->datos);
+                    display("Cliente Desconectado!\n\n");
+                    close(clientFD);
+                    salir = 1;//Logout
+                    break;
+
+            }
 
         }
+
+        liberarMemoria(trama);
     }
 
     pthread_cancel(pthread_self());
@@ -77,7 +92,7 @@ void *comprobarNombres(void *arg) {
     return NULL;
 }
 
-char * opcionBuscarUsuario(ConexionData *conexionData) {
+char *opcionBuscarUsuario(ConexionData *conexionData) {
     LoginData *loginData = destructDataSearch(conexionData->datos);
     ListadoUsuarios *listadoUsuarios = buscarUsuarios(loginData);
     char print[200];
@@ -97,7 +112,7 @@ char * opcionBuscarUsuario(ConexionData *conexionData) {
         display("\n");
 
         for (int i = 0; i < listadoUsuarios->total; ++i) {
-            sprintf(auxid,"%d",listadoUsuarios->usuarios[i].id);
+            sprintf(auxid, "%d", listadoUsuarios->usuarios[i].id);
             sprintf(print, "%s ", auxid);
             display(print);
             display(listadoUsuarios->usuarios[i].nombre);
