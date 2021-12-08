@@ -182,7 +182,7 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
             // *
             dataSize++;
             data = realloc(data, sizeof (char) * dataSize);
-            data[dataSize] = '*';
+            data[dataSize - 1] = '*';
 
             // id
             sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
@@ -194,17 +194,16 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
             }
 
             // controlar asterisco final
-            if (listadoUsuarios->total - 1 != i) {
+            if (listadoUsuarios->total != i) {
                 // *
                 dataSize++;
                 data = realloc(data, sizeof (char) * dataSize);
-                data[dataSize] = '*';
+                data[dataSize - 1] = '*';
             }
         }
     } else {
         data = "0";
     }
-
 
     return data;
 }
