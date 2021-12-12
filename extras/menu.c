@@ -69,6 +69,12 @@ void *comprobarNombres(void *arg) {
                     }
 
                     break;
+                case 'F': //send
+
+                    break;
+                case 'P': //photo
+
+                    break;
                 case 'Q':   //logout
                     if (!usuarioExiste(loginData)) {
                         // TODO: enviar error al cliente y romper el fujo (return/break)
