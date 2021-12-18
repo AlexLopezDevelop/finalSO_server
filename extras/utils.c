@@ -225,7 +225,7 @@ void gestorDeSockets() {
     }
 
     bzero(&servidor, sizeof(servidor));
-    servidor.sin_port = htons(8710);
+    servidor.sin_port = htons(8755);
     servidor.sin_family = AF_INET;
     servidor.sin_addr.s_addr = htonl(INADDR_ANY);
 

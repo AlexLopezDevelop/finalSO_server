@@ -23,9 +23,6 @@ void *comprobarNombres(void *arg) {
 
         if (valread == MAX_TRAMA_SIZE) {
 
-            display("CASSEY");
-            display("\n");
-
             conexionData = guardarTrama(trama);
 
             switch (trama[15]) {
@@ -70,6 +67,11 @@ void *comprobarNombres(void *arg) {
 
                     break;
                 case 'F': //send
+                    display("recieved Send");
+                    tramaRespuesta = obtenerTrama('I', "IMATGE OK");
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    read(clientFD, trama, MAX_TRAMA_SIZE);
+                    display(trama);
 
                     break;
                 case 'P': //photo
