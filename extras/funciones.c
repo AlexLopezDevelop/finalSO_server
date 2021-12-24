@@ -102,28 +102,25 @@ void readInput(char **string) {
 }
 
 char *readLineFile(int fd, char hasta) {
-    int i = 0;
-    char *aux = NULL;
-    char caracter = '\0';
+    int i = 0, size;
+    char c = '\0';
+    char *string = (char *) malloc(sizeof(char));
 
-    // Bucle para almacenar la cadena hasta el caracter delimitador o cuando sea EOF
-    while (caracter != hasta && !checkEOF(fd)) {
+    while (1) {
+        size = read(fd, &c, sizeof(char));
 
-        // Leemos un solo caracter (1byte)
-        read(fd, &caracter, sizeof(char));
-
-        // Si el caracter es valido reasignamos espacio en la memoria y lo guardamos en la cadena
-        if (caracter != hasta) {
-            aux = (char *) realloc(aux, i + 1);
-            aux[i] = caracter;
-            i++;
+        if (c != hasta && size > 0) {
+            string = (char *) realloc(string, sizeof(char) * (i + 2));
+            string[i++] = c;
+        } else {
+            break;
         }
 
     }
-    // Marcamos el final de la cadena y lo copiamos
-    aux[i] = '\0';
 
-    return aux;
+    string[i] = '\0';
+
+    return string;
 }
 
 int checkEOF(int fd) {

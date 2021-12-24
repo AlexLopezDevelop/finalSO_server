@@ -10,9 +10,9 @@
 #define TRAMA_DATA_SIZE 240
 
 typedef struct {
-    char ip[50];
+    char * ip;
     int puerto;
-    char directorio[100];
+    char * directorio;
 } Configuracion;
 
 #endif //FINALSO_SERVER_CONFIGURACION_H

@@ -10,6 +10,7 @@
 int leerFichero(char *pathFile, Configuracion *configuracion) {
 
     int fd;
+    char lineaFile[250];
 
     fd = open(pathFile, O_RDONLY);
 
@@ -18,8 +19,12 @@ int leerFichero(char *pathFile, Configuracion *configuracion) {
     }
 
     while (!checkEOF(fd)) {
+        strcpy(lineaFile, readLineFile(fd, '\n'));
+        configuracion->ip = malloc(sizeof(char) * strlen(lineaFile) + 1);
         strcpy(configuracion->ip, readLineFile(fd, '\n'));
         configuracion->puerto = atoi(readLineFile(fd, '\n'));
+        strcpy(lineaFile, readLineFile(fd, '\n'));
+        configuracion->directorio = malloc(sizeof(char) * strlen(lineaFile) + 1);
         strcpy(configuracion->directorio, readLineFile(fd, '\n'));
 
     }
@@ -54,12 +59,12 @@ int leerFicheroUsuariosRegistrados(Usuarios * usuarios) {
 
         // nombre
         strcpy(lineaFile, readLineFile(fd, '\n'));
-        usuarios->registrados[i].nombre = malloc(strlen(lineaFile));
+        usuarios->registrados[i].nombre = malloc(strlen(lineaFile)+1);
         strcpy(usuarios->registrados[i].nombre, lineaFile);
 
         // codigo postal
         strcpy(lineaFile, readLineFile(fd, '\n'));
-        usuarios->registrados[i].codigoPostal = malloc(strlen(lineaFile));
+        usuarios->registrados[i].codigoPostal = malloc(strlen(lineaFile)+1);
         strcpy(usuarios->registrados[i].codigoPostal, lineaFile);
         i++;
     }
