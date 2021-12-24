@@ -74,6 +74,10 @@ void *comprobarNombres(void *arg) {
                     display(trama);
 
                     break;
+                case 'D':
+                    display("recieved image");
+                    display(trama);
+                    break;
                 case 'P': //photo
 
                     break;
