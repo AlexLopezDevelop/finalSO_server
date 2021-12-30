@@ -7,6 +7,7 @@
 
 #include "usuario.h"
 #include "../modelos/conexion.h"
+#include "../modelos/foto.h"
 
 void * comprobarNombres(void * arg);
 
@@ -17,6 +18,8 @@ void gestorDeSockets();
 char * concatenarStrings(char **instruccion);
 
 char * crearDataSearch(ListadoUsuarios * listadoUsuarios);
+
+FotoData *destructDataImagen(char *datos);
 
 LoginData *destructDataSearch(char *tramaDatos);
 

@@ -15,6 +15,9 @@ void *comprobarNombres(void *arg) {
     char *tramaRespuesta;
     char *trama = NULL;
     int valread;
+    FotoData * fotoData = malloc(sizeof(FotoData));
+    fotoData->tramas = malloc(sizeof (char *));
+    fotoData->totalTramas = 0;
 
     while (salir != 1) {
         trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
@@ -70,13 +73,17 @@ void *comprobarNombres(void *arg) {
                     display("recieved Send");
                     tramaRespuesta = obtenerTrama('I', "IMATGE OK");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    read(clientFD, trama, MAX_TRAMA_SIZE);
-                    display(trama);
-
+                    fotoData = destructDataImagen(conexionData->datos);
+                    //liberarMemoria(trama);
                     break;
                 case 'D':
-                    display("recieved image");
-                    display(trama);
+                    display("recieved image trama\n");
+
+                    fotoData->tramas = realloc(fotoData->tramas, sizeof (char *) * (fotoData->totalTramas + 1));
+                    fotoData->tramas[fotoData->totalTramas] = strdup(conexionData->datos);
+                    fotoData->totalTramas++;
+
+                    //TODO: Preparar para siguiente foto. hacer free de fotoData y mirar el fin de las tramas = fotodata.size / 240
                     break;
                 case 'P': //photo
 

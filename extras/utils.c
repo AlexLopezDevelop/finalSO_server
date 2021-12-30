@@ -39,6 +39,23 @@ ConexionData *guardarTrama(const char *trama) {
     return conexionData;
 }
 
+FotoData *destructDataImagen(char *datos) {
+    FotoData *fotoData = malloc(sizeof(FotoData));
+    char delim[] = "*";
+    char *ptr = strtok(datos, delim);
+
+    while (ptr != NULL) {
+        fotoData->nombre = strdup(ptr);
+        ptr = strtok(NULL, delim);
+        fotoData->size = atoi(ptr);
+        ptr = strtok(NULL, delim);
+        fotoData->md5sum = strdup(ptr);
+        ptr = strtok(NULL, delim);
+    }
+
+    return fotoData;
+}
+
 LoginData *destructData(char *datos) {
     LoginData *loginData = malloc(sizeof(LoginData));
     loginData->nombre = malloc(sizeof(char));
@@ -149,9 +166,9 @@ LoginData *destructDataSearch(char *tramaDatos) {
     return loginData;
 }
 
-char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
-    char * data = malloc(sizeof (char));
-    char stringAux [100];
+char *crearDataSearch(ListadoUsuarios *listadoUsuarios) {
+    char *data = malloc(sizeof(char));
+    char stringAux[100];
     int dataSize;
     int nombreSize;
     int stringAuxSize;
@@ -159,29 +176,29 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
     // total usuarios
     sprintf(stringAux, "%d", listadoUsuarios->total);
     dataSize = strlen(stringAux);
-    data = realloc(data, sizeof (char) * dataSize);
+    data = realloc(data, sizeof(char) * dataSize);
     strcpy(data, stringAux);
 
     // *
     dataSize++;
-    data = realloc(data, sizeof (char) * dataSize);
+    data = realloc(data, sizeof(char) * dataSize);
     data[dataSize - 1] = '*';
 
     // Usuarios
-    if (listadoUsuarios->total != 0){
+    if (listadoUsuarios->total != 0) {
         for (int i = 0; i < listadoUsuarios->total; ++i) {
 
             // Nombre
             nombreSize = (int) strlen(listadoUsuarios->usuarios[i].nombre);
             for (int j = 0; j < nombreSize; ++j) {
                 dataSize++;
-                data = realloc(data, sizeof (char) * dataSize);
+                data = realloc(data, sizeof(char) * dataSize);
                 data[dataSize - 1] = listadoUsuarios->usuarios[i].nombre[j];
             }
 
             // *
             dataSize++;
-            data = realloc(data, sizeof (char) * dataSize);
+            data = realloc(data, sizeof(char) * dataSize);
             data[dataSize - 1] = '*';
 
             // id
@@ -189,7 +206,7 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
             stringAuxSize = (int) strlen(stringAux);
             for (int j = 0; j < stringAuxSize; ++j) {
                 dataSize++;
-                data = realloc(data, sizeof (char) * dataSize);
+                data = realloc(data, sizeof(char) * dataSize);
                 data[dataSize - 1] = stringAux[j];
             }
 
@@ -197,7 +214,7 @@ char * crearDataSearch(ListadoUsuarios * listadoUsuarios) {
             if (listadoUsuarios->total != i) {
                 // *
                 dataSize++;
-                data = realloc(data, sizeof (char) * dataSize);
+                data = realloc(data, sizeof(char) * dataSize);
                 data[dataSize - 1] = '*';
             }
         }
