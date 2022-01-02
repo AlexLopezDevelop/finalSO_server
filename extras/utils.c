@@ -53,6 +53,8 @@ FotoData *destructDataImagen(char *datos) {
         ptr = strtok(NULL, delim);
     }
 
+    fotoData->sizeTrama = fotoData->size / TRAMA_DATA_SIZE;
+
     return fotoData;
 }
 

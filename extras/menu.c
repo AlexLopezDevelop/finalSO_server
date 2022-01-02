@@ -15,90 +15,106 @@ void *comprobarNombres(void *arg) {
     char *tramaRespuesta;
     char *trama = NULL;
     int valread;
-    FotoData * fotoData = malloc(sizeof(FotoData));
-    fotoData->tramas = malloc(sizeof (char *));
+    FotoData *fotoData = malloc(sizeof(FotoData));
+    fotoData->tramas = malloc(sizeof(char *));
+    fotoData->sizeTrama = 0;
     fotoData->totalTramas = 0;
 
     while (salir != 1) {
         trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
 
-        valread = read(clientFD, trama, MAX_TRAMA_SIZE);
+        read(clientFD, trama, MAX_TRAMA_SIZE);
 
-        if (valread == MAX_TRAMA_SIZE) {
+        conexionData = guardarTrama(trama);
+        switch (trama[15]) {
+            case 'C':   //Login
+                display("\n\nReceived login ");
+                LoginData *loginData = destructData(conexionData->datos);
+                sprintf(print, "%s %s\n", loginData->nombre, loginData->codigoPostal);
+                display(print);
 
-            conexionData = guardarTrama(trama);
+                loginData->id = obtenerIdUsuario(loginData);
 
-            switch (trama[15]) {
-                case 'C':   //Login
-                    display("\n\nReceived login ");
-                    LoginData *loginData = destructData(conexionData->datos);
-                    sprintf(print, "%s %s\n", loginData->nombre, loginData->codigoPostal);
-                    display(print);
+                // revisar si no existe, no tiene id
+                if (loginData->id == 0) {
+                    registrarUsuario(loginData);
+                }
 
-                    loginData->id = obtenerIdUsuario(loginData);
-
-                    // revisar si no existe, no tiene id
-                    if (loginData->id == 0) {
-                        registrarUsuario(loginData);
-                    }
-
-                    sprintf(idString, "%d", loginData->id);
-                    sprintf(print, "Assigned ID %s.\n", idString);
-                    display(print);
-                    tramaRespuesta = obtenerTrama('O', idString);
+                sprintf(idString, "%d", loginData->id);
+                sprintf(print, "Assigned ID %s.\n", idString);
+                display(print);
+                tramaRespuesta = obtenerTrama('O', idString);
+                write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                display("Send answer\n\n");
+                break;
+            case 'S':  //search
+                display("MANOLO");
+                display("\n");
+                if (!usuarioExiste(loginData)) {
+                    tramaRespuesta = obtenerTrama('K', "0");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    display("Send answer\n\n");
                     break;
-                case 'S':  //search
-                    display("MANOLO");
-                    display("\n");
-                    if (!usuarioExiste(loginData)) {
-                        tramaRespuesta = obtenerTrama('K', "0");
-                        write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                        break;
-                    }
-                    display("Buscando usuarios\n");
-                    char *data = opcionBuscarUsuario(conexionData);
-                    if (data[0] != '0') {
-                        tramaRespuesta = obtenerTrama('L', data);
-                        write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                        display("\nSend answer\n\n");
-                    } else {
-                        tramaRespuesta = obtenerTrama('K', data);
-                        write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    }
-
-                    break;
-                case 'F': //send
-                    display("recieved Send");
-                    tramaRespuesta = obtenerTrama('I', "IMATGE OK");
+                }
+                display("Buscando usuarios\n");
+                char *data = opcionBuscarUsuario(conexionData);
+                if (data[0] != '0') {
+                    tramaRespuesta = obtenerTrama('L', data);
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    fotoData = destructDataImagen(conexionData->datos);
-                    //liberarMemoria(trama);
-                    break;
-                case 'D':
-                    display("recieved image trama\n");
+                    display("\nSend answer\n\n");
+                } else {
+                    tramaRespuesta = obtenerTrama('K', data);
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                }
 
-                    fotoData->tramas = realloc(fotoData->tramas, sizeof (char *) * (fotoData->totalTramas + 1));
-                    fotoData->tramas[fotoData->totalTramas] = strdup(conexionData->datos);
-                    fotoData->totalTramas++;
+                break;
+            case 'F': //send
+                display("recieved Send");
+                tramaRespuesta = obtenerTrama('I', "IMATGE OK");
+                write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                fotoData = destructDataImagen(conexionData->datos);
+                //liberarMemoria(trama);
+                break;
+            case 'D':
+                display("recieved image trama\n");
 
-                    //TODO: Preparar para siguiente foto. hacer free de fotoData y mirar el fin de las tramas = fotodata.size / 240
-                    break;
-                case 'P': //photo
+                fotoData->tramas = realloc(fotoData->tramas, sizeof(char *) * (fotoData->totalTramas + 1));
+                fotoData->tramas[fotoData->totalTramas] = malloc(sizeof (char));
+                for (int i = 0; i < strlen(conexionData->datos) || conexionData->datos[i] != '\0'; i++) {
+                    fotoData->tramas[fotoData->totalTramas] = realloc(fotoData->tramas[fotoData->totalTramas], sizeof(char) * (i + 1));
+                    fotoData->tramas[fotoData->totalTramas][i] = conexionData->datos[i];
+                }
+                fotoData->totalTramas++;
 
-                    break;
-                case 'Q':   //logout
-                    if (!usuarioExiste(loginData)) {
-                        // TODO: enviar error al cliente y romper el fujo (return/break)
+                if (fotoData->totalTramas == (fotoData->sizeTrama+1)) {
+                    int fd;
+
+                    fd = open(fotoData->nombre, O_WRONLY | O_CREAT | O_TRUNC, 00666);
+
+                    if (errorAbrir(fd)) {
+                        display("Error al guardar la imagen\n");
                     }
-                    mensajeDesconectadoUsuario(conexionData->datos);
-                    display("Cliente Desconectado!\n\n");
-                    close(clientFD);
-                    salir = 1;//Logout
-                    break;
 
-            }
+                    for (int i = 0; i < fotoData->totalTramas; i++) {
+                        write(fd, fotoData->tramas[i], strlen(fotoData->tramas[i]));
+                    }
+                    display("imagen done\n");
+
+                }
+
+                //TODO: Preparar para siguiente foto. hacer free de fotoData y mirar el fin de las tramas = fotodata.size / 240
+                break;
+            case 'P': //photo
+
+                break;
+            case 'Q':   //logout
+                if (!usuarioExiste(loginData)) {
+                    // TODO: enviar error al cliente y romper el fujo (return/break)
+                }
+                mensajeDesconectadoUsuario(conexionData->datos);
+                display("Cliente Desconectado!\n\n");
+                close(clientFD);
+                salir = 1;//Logout
+                break;
 
         }
 

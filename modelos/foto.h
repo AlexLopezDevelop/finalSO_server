@@ -8,6 +8,7 @@
 typedef struct {
     char * nombre;
     int size;
+    int sizeTrama;
     int totalTramas;
     char * md5sum;
     char **tramas;
