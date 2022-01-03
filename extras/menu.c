@@ -72,34 +72,33 @@ void *comprobarNombres(void *arg) {
                 tramaRespuesta = obtenerTrama('I', "IMATGE OK");
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 fotoData = destructDataImagen(conexionData->datos);
+
+                fotoData->totalTramas = fotoData->size / TRAMA_DATA_SIZE;
+                if (fotoData->size % TRAMA_DATA_SIZE != 0) {
+                    fotoData->totalTramas++;
+                }
                 //liberarMemoria(trama);
                 break;
             case 'D':
                 display("recieved image trama\n");
 
-                fotoData->tramas = realloc(fotoData->tramas, sizeof(char *) * (fotoData->totalTramas + 1));
-                fotoData->tramas[fotoData->totalTramas] = malloc(sizeof (char));
-                for (int i = 0; i < strlen(conexionData->datos) || conexionData->datos[i] != '\0'; i++) {
-                    fotoData->tramas[fotoData->totalTramas] = realloc(fotoData->tramas[fotoData->totalTramas], sizeof(char) * (i + 1));
-                    fotoData->tramas[fotoData->totalTramas][i] = conexionData->datos[i];
+                int fd;
+
+                fd = open(fotoData->nombre, O_WRONLY | O_CREAT | O_TRUNC, 00666);
+
+                if (errorAbrir(fd)) {
+                    display("Error al guardar la imagen\n");
                 }
-                fotoData->totalTramas++;
 
-                if (fotoData->totalTramas == (fotoData->sizeTrama+1)) {
-                    int fd;
-
-                    fd = open(fotoData->nombre, O_WRONLY | O_CREAT | O_TRUNC, 00666);
-
-                    if (errorAbrir(fd)) {
-                        display("Error al guardar la imagen\n");
+                for (int i = 0; i < fotoData->totalTramas; i++) {
+                    if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas - 1) == i) {
+                        write(fd, conexionData->datos, fotoData->size % TRAMA_DATA_SIZE);
+                    } else {
+                        write(fd, conexionData->datos, TRAMA_DATA_SIZE);
                     }
-
-                    for (int i = 0; i < fotoData->totalTramas; i++) {
-                        write(fd, fotoData->tramas[i], strlen(fotoData->tramas[i]));
-                    }
-                    display("imagen done\n");
-
                 }
+                display("imagen done\n");
+
 
                 //TODO: Preparar para siguiente foto. hacer free de fotoData y mirar el fin de las tramas = fotodata.size / 240
                 break;

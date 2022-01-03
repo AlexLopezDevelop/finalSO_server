@@ -28,11 +28,18 @@ ConexionData *guardarTrama(const char *trama) {
     // obtener data
     int dataIndex = 0;
 
-    for (int i = TRAMA_ORIGEN_SIZE + 1; i < MAX_TRAMA_SIZE; ++i) {
-        conexionData->datos[dataIndex] = trama[i];
-        dataIndex++;
-        if (trama[i] == '\0') {
-            break;
+    if (conexionData->tipo == 'D') {
+        for (int i = TRAMA_ORIGEN_SIZE + 1; i < MAX_TRAMA_SIZE; ++i) {
+            conexionData->datos[dataIndex] = trama[i];
+            dataIndex++;
+        }
+    } else {
+        for (int i = TRAMA_ORIGEN_SIZE + 1; i < MAX_TRAMA_SIZE; ++i) {
+            conexionData->datos[dataIndex] = trama[i];
+            dataIndex++;
+            if (trama[i] == '\0') {
+                break;
+            }
         }
     }
 
