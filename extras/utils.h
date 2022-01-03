@@ -13,7 +13,7 @@ void * comprobarNombres(void * arg);
 
 void salir();
 
-void gestorDeSockets();
+int gestorDeSockets();
 
 char * concatenarStrings(char **instruccion);
 

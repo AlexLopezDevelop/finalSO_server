@@ -12,9 +12,10 @@ void *comprobarNombres(void *arg) {
     char idString[30];
     char print[100];
     ConexionData *conexionData;
-    char *tramaRespuesta;
+    char *tramaRespuesta = NULL;
     char *trama = NULL;
-    int valread;
+    int i = 0;
+
     FotoData *fotoData = malloc(sizeof(FotoData));
     fotoData->tramas = malloc(sizeof(char *));
     fotoData->sizeTrama = 0;
@@ -84,23 +85,26 @@ void *comprobarNombres(void *arg) {
 
                 int fd;
 
-                fd = open(fotoData->nombre, O_WRONLY | O_CREAT | O_TRUNC, 00666);
+                fd = open(fotoData->nombre, O_WRONLY | O_CREAT | O_APPEND, 00666);
 
                 if (errorAbrir(fd)) {
                     display("Error al guardar la imagen\n");
                 }
 
-                for (int i = 0; i < fotoData->totalTramas; i++) {
-                    if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas - 1) == i) {
-                        write(fd, conexionData->datos, fotoData->size % TRAMA_DATA_SIZE);
-                    } else {
-                        write(fd, conexionData->datos, TRAMA_DATA_SIZE);
-                    }
+
+                if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas-1) == i) {
+                    write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
+                    i=0;
+                } else {
+                    write(fd, conexionData->datos, sizeof (char) *TRAMA_DATA_SIZE);
+                    i++;
                 }
-                display("imagen done\n");
 
 
-                //TODO: Preparar para siguiente foto. hacer free de fotoData y mirar el fin de las tramas = fotodata.size / 240
+                close(fd);
+
+
+
                 break;
             case 'P': //photo
 

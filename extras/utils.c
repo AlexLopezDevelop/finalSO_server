@@ -240,7 +240,7 @@ void salir() {
     raise(SIGINT);
 }
 
-void gestorDeSockets() {
+int gestorDeSockets() {
     int clientFD;
     struct sockaddr_in servidor;
 
