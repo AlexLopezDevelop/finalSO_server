@@ -188,9 +188,7 @@ int sendImage(int socket, char *fileName) {
         return 1;
     }
 
-
     char c[TRAMA_DATA_SIZE];
-
 
     while (!checkEOF(picture)) {
         memset(c, 0, TRAMA_DATA_SIZE);
@@ -199,12 +197,9 @@ int sendImage(int socket, char *fileName) {
         char *trama = obtenerTrama('F', c);
         write(socket, trama, MAX_TRAMA_SIZE);
         usleep(200);
-
     }
 
-
     close(picture);
-
 
     display("Foto Enviada");
     return 0;

@@ -26,7 +26,6 @@ void *comprobarNombres(void *arg) {
         trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
 
         read(clientFD, trama, MAX_TRAMA_SIZE);
-
         conexionData = guardarTrama(trama);
         switch (trama[15]) {
             case 'C':   //Login
@@ -84,12 +83,14 @@ void *comprobarNombres(void *arg) {
 
                 int fd;
 
-                fd = open(fotoData->nombre, O_WRONLY | O_CREAT | O_APPEND, 00666);
+                char *imageName;
+                asprintf(&imageName, "%d.jpg", loginData->id);
+
+                fd = open(imageName, O_WRONLY | O_CREAT | O_APPEND, 00666);
 
                 if (errorAbrir(fd)) {
                     display("Error al guardar la imagen\n");
                 }
-
 
                 if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas-1) == i) {
                     write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
@@ -99,29 +100,30 @@ void *comprobarNombres(void *arg) {
                     i++;
                 }
 
-
                 close(fd);
 
 
                 break;
             case 'P': //photo
-                display("recieved PHOTO\n");
+                display("recieved PHOTO download request\n");
                 char sizeFileString[100];
 
-                int sizeFile = getFileSize(conexionData->datos);
+                char *imagePath;
+                asprintf(&imagePath, "%s.jpg", conexionData->datos);
+
+                int sizeFile = getFileSize(imagePath);
                 sprintf(sizeFileString, "%d", sizeFile);
                 display(sizeFileString);
 
-                char *md5File = generateMd5sum(conexionData->datos);
+                char *md5File = generateMd5sum(imagePath);
 
                 char *dataImage;
-                asprintf(&dataImage, "%s*%s*%s", conexionData->datos, sizeFileString,md5File);
+                asprintf(&dataImage, "%s*%s*%s", imagePath, sizeFileString, md5File);
 
                 tramaRespuesta = obtenerTrama('P', dataImage);
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
 
-                sendImage(clientFD, conexionData->datos);
-
+                sendImage(clientFD, imagePath);
 
                 break;
             case 'Q':   //logout

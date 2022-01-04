@@ -122,12 +122,19 @@ char *crearTrama(char *origen, char tipo, char *data) {
     // data
     int dataIndex = 0;
 
-    for (int i = TRAMA_ORIGEN_SIZE + tipoSize; i < TRAMA_DATA_SIZE; ++i) {
-        if (dataIndex < dataSize) {
+    if (tipo == 'F') {
+        for (int i = TRAMA_ORIGEN_SIZE + tipoSize; i < MAX_TRAMA_SIZE; i++) {
             trama[i] = data[dataIndex];
             dataIndex++;
-        } else {
-            trama[i] = '\0';
+        }
+    } else {
+        for (int i = TRAMA_ORIGEN_SIZE + tipoSize; i < TRAMA_DATA_SIZE; ++i) {
+            if (dataIndex < dataSize) {
+                trama[i] = data[dataIndex];
+                dataIndex++;
+            } else {
+                trama[i] = '\0';
+            }
         }
     }
 
