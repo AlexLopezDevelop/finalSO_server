@@ -33,9 +33,14 @@
 #include "dirent.h"
 #include "errno.h"
 #include "stdbool.h"
+#include <sys/stat.h>
+
+#include "../modelos/configuracion.h"
+#include "../extras//utils.h"
 
 
 #define FILE1 "Config.dat"
+#define MD5FILE "md5sum.txt"
 
 int errorArgumentos(int argc, char *argv[], int num_argumentos);
 
@@ -54,5 +59,11 @@ void readInput(char **string);
 char * readStringTo (char * string, char hasta);
 
 char * concatStringsPorAsterico(char * string1, char * string2);
+
+int getFileSize(char *fileName);
+
+char *generateMd5sum(char *string);
+
+int sendImage(int socket, char *fileName);
 
 #endif //PRACTICAFINALSO_FUNCIONES_H

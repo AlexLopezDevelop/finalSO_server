@@ -141,4 +141,72 @@ int checkEOF(int fd) {
     return 0;
 }
 
+int getFileSize(char *fileName) {
+    struct stat sb;
+
+    if (stat(fileName, &sb) == -1) {
+        perror("stat");
+        exit(EXIT_FAILURE);
+    }
+
+    return sb.st_size;
+}
+
+char *generateMd5sum(char *string) {
+    char *args[] = {"md5sum", string, 0};
+    int fd = open(MD5FILE, O_CREAT | O_WRONLY, S_IRWXU);
+    pid_t pid = fork();
+
+    if (!pid) {
+        dup2(fd, STDOUT_FILENO);
+        close(fd);
+        execvp(args[0], args);
+    }
+
+    fd = open(MD5FILE, O_RDONLY);
+
+    char *md5String = malloc(sizeof(char) * 33);
+
+    if (errorAbrir(fd)) {
+        return md5String;
+    }
+
+    strcpy(md5String, readLineFile(fd, ' '));
+
+    close(fd);
+
+    return md5String;
+}
+
+int sendImage(int socket, char *fileName) {
+    int picture;
+
+    picture = open(fileName, O_RDONLY);
+
+    if (errorAbrir(picture)) {
+        display("Error Opening Image File");
+        return 1;
+    }
+
+
+    char c[TRAMA_DATA_SIZE];
+
+
+    while (!checkEOF(picture)) {
+        memset(c, 0, TRAMA_DATA_SIZE);
+        read(picture, &c, sizeof(char) * TRAMA_DATA_SIZE);
+
+        char *trama = obtenerTrama('F', c);
+        write(socket, trama, MAX_TRAMA_SIZE);
+        usleep(200);
+
+    }
+
+
+    close(picture);
+
+
+    display("Foto Enviada");
+    return 0;
+}
 

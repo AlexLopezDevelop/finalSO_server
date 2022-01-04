@@ -22,6 +22,7 @@ void *comprobarNombres(void *arg) {
     fotoData->totalTramas = 0;
 
     while (salir != 1) {
+
         trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
 
         read(clientFD, trama, MAX_TRAMA_SIZE);
@@ -49,8 +50,6 @@ void *comprobarNombres(void *arg) {
                 display("Send answer\n\n");
                 break;
             case 'S':  //search
-                display("MANOLO");
-                display("\n");
                 if (!usuarioExiste(loginData)) {
                     tramaRespuesta = obtenerTrama('K', "0");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
@@ -104,9 +103,25 @@ void *comprobarNombres(void *arg) {
                 close(fd);
 
 
-
                 break;
             case 'P': //photo
+                display("recieved PHOTO\n");
+                char sizeFileString[100];
+
+                int sizeFile = getFileSize(conexionData->datos);
+                sprintf(sizeFileString, "%d", sizeFile);
+                display(sizeFileString);
+
+                char *md5File = generateMd5sum(conexionData->datos);
+
+                char *dataImage;
+                asprintf(&dataImage, "%s*%s*%s", conexionData->datos, sizeFileString,md5File);
+
+                tramaRespuesta = obtenerTrama('P', dataImage);
+                write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+
+                sendImage(clientFD, conexionData->datos);
+
 
                 break;
             case 'Q':   //logout
