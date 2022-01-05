@@ -9,24 +9,24 @@
 #include "../modelos/conexion.h"
 #include "../modelos/foto.h"
 
-void * comprobarNombres(void * arg);
+void * utils_comprobar_nombres(void * arg);
 
-void salir();
+void utils_salir();
 
-int gestorDeSockets();
+int utils_gestor_de_sockets();
 
-char * concatenarStrings(char **instruccion);
+char * utils_concatenar_strings(char **instruccion);
 
-char * crearDataSearch(ListadoUsuarios * listadoUsuarios);
+char * utils_crear_data_search(ListadoUsuarios * listadoUsuarios);
 
-FotoData *destructDataImagen(char *datos);
+FotoData *utils_destruct_data_imagen(char *datos);
 
-LoginData *destructDataSearch(char *tramaDatos);
+LoginData *utils_destruct_data_search(char *tramaDatos);
 
-char *obtenerTrama(char tipo, char *data);
+char *utils_obtener_trama(char tipo, char *data);
 
-LoginData *destructData(char *datos);
+LoginData *utils_destruct_data(char *datos);
 
-ConexionData *guardarTrama(const char *trama);
+ConexionData *utils_guardar_trama(const char *trama);
 
 #endif //FINALSO_SERVER_UTILS_H

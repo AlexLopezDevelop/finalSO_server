@@ -7,6 +7,7 @@
 
 // Librerias GENERALES
 #define _GNU_SOURCE
+
 #include <pthread.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -42,28 +43,28 @@
 #define FILE1 "Config.dat"
 #define MD5FILE "md5sum.txt"
 
-int errorArgumentos(int argc, char *argv[], int num_argumentos);
+int funciones_error_argumentos(int argc, char *argv[], int num_argumentos);
 
-void display(char *string);
+void funciones_display(char *string);
 
-int checkEOF(int fd);
+int funciones_check_eof(int fd);
 
-void liberarMemoria(void *ptr);
+void funciones_liberar_memoria(void *ptr);
 
-char *readLineFile(int fd, char hasta);
+char *funciones_read_line_file(int fd, char hasta);
 
-int errorAbrir(int fd);
+int funciones_error_abrir(int fd);
 
-void readInput(char **string);
+void funciones_read_input(char **string);
 
-char * readStringTo (char * string, char hasta);
+char *funciones_read_string_to(char *string, char hasta);
 
-char * concatStringsPorAsterico(char * string1, char * string2);
+char *funciones_concat_strings_por_asterico(char *string1, char *string2);
 
-int getFileSize(char *fileName);
+int funciones_get_file_size(char *fileName);
 
-char *generateMd5sum(char *string);
+char *funciones_generate_md5sum(char *string);
 
-int sendImage(int socket, char *fileName);
+int funciones_send_image(int socket, char *fileName);
 
 #endif //PRACTICAFINALSO_FUNCIONES_H

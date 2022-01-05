@@ -10,7 +10,7 @@
 
 int listenFD;
 
-ConexionData *guardarTrama(const char *trama) {
+ConexionData *utils_guardar_trama(const char *trama) {
     ConexionData *conexionData;
     conexionData = malloc(sizeof(ConexionData));
 
@@ -46,7 +46,7 @@ ConexionData *guardarTrama(const char *trama) {
     return conexionData;
 }
 
-FotoData *destructDataImagen(char *datos) {
+FotoData *utils_destruct_data_imagen(char *datos) {
     FotoData *fotoData = malloc(sizeof(FotoData));
     char delim[] = "*";
     char *ptr = strtok(datos, delim);
@@ -65,7 +65,7 @@ FotoData *destructDataImagen(char *datos) {
     return fotoData;
 }
 
-LoginData *destructData(char *datos) {
+LoginData *utils_destruct_data(char *datos) {
     LoginData *loginData = malloc(sizeof(LoginData));
     loginData->nombre = malloc(sizeof(char));
     loginData->codigoPostal = malloc(sizeof(char));
@@ -141,11 +141,11 @@ char *crearTrama(char *origen, char tipo, char *data) {
     return trama;
 }
 
-char *obtenerTrama(char tipo, char *data) {
+char *utils_obtener_trama(char tipo, char *data) {
     return crearTrama("ATREIDES", tipo, data);
 }
 
-LoginData *destructDataSearch(char *tramaDatos) {
+LoginData *utils_destruct_data_search(char *tramaDatos) {
     bool isCodigoPostal = false, isId = false;
     int idIndex = 0, cpIndex = 0;
     int sizeDatos = strlen(tramaDatos);
@@ -182,7 +182,7 @@ LoginData *destructDataSearch(char *tramaDatos) {
     return loginData;
 }
 
-char *crearDataSearch(ListadoUsuarios *listadoUsuarios) {
+char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios) {
     char *data = malloc(sizeof(char));
     char stringAux[100];
     int dataSize;
@@ -241,17 +241,17 @@ char *crearDataSearch(ListadoUsuarios *listadoUsuarios) {
     return data;
 }
 
-void salir() {
+void utils_salir() {
     close(listenFD);
     signal(SIGINT, SIG_DFL);
     raise(SIGINT);
 }
 
-int gestorDeSockets() {
+int utils_gestor_de_sockets() {
     int clientFD;
     struct sockaddr_in servidor;
 
-    signal(SIGINT, salir);
+    signal(SIGINT, utils_salir);
 
     if ((listenFD = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
         printF("Error creant el socket\n");
@@ -279,6 +279,6 @@ int gestorDeSockets() {
 
         pthread_t thrd;
         printf("clientFD: %d\n", clientFD);
-        pthread_create(&thrd, NULL, comprobarNombres, (void *) &clientFD);
+        pthread_create(&thrd, NULL, utils_comprobar_nombres, (void *) &clientFD);
     }
 }

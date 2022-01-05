@@ -7,8 +7,8 @@
 
 #include "../modelos/conexion.h"
 
-char * opcionBuscarUsuario(ConexionData *conexionData);
+char * menu_opcion_buscar_usuario(ConexionData *conexionData);
 
-void *comprobarNombres(void *arg);
+void *utils_comprobar_nombres(void *arg);
 
 #endif //FINALSO_SERVER_MENU_H
