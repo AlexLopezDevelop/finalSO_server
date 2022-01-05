@@ -104,7 +104,6 @@ void *utils_comprobar_nombres(void *arg) {
                 if (i == fotoData->totalTramas-1 && !error) {
                     tramaRespuesta = utils_obtener_trama('I', "IMATGE OK");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    funciones_display("IMAGE OK\n");
                     asprintf(&printf, "Guardada com %d.jpg\n\n", loginData->id);
                     funciones_display(printf);
                     close(fd);
@@ -161,13 +160,13 @@ void *utils_comprobar_nombres(void *arg) {
     return NULL;
 }
 
-char *opcionBuscarUsuario(ConexionData *conexionData) {
+char *menu_opcion_buscar_usuario(ConexionData *conexionData) {
     LoginData *loginData = utils_destruct_data_search(conexionData->datos);
     ListadoUsuarios *listadoUsuarios = usuario_buscar(loginData);
     char print[200];
     char auxid[30];
 
-    sprintf(print, "Rebut search %s de %s %d\nFeta la cerca\n", loginData->codigoPostal, loginData->nombre,
+    sprintf(print, "Received search %s de %s %d\nFeta la cerca\n", loginData->codigoPostal, loginData->nombre,
             loginData->id);
     funciones_display(print);
 
