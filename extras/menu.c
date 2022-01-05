@@ -67,30 +67,31 @@ void *comprobarNombres(void *arg) {
 
                 break;
             case 'F': //send
-                display("recieved Send");
-                tramaRespuesta = obtenerTrama('I', "IMATGE OK");
-                write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                display("Rebut send ");
+
                 fotoData = destructDataImagen(conexionData->datos);
+                char *printf;
+                asprintf(&printf, "%s de %s %d\n", fotoData->nombre, loginData->nombre, loginData->id);
+                display(printf);
 
                 fotoData->totalTramas = fotoData->size / TRAMA_DATA_SIZE;
                 if (fotoData->size % TRAMA_DATA_SIZE != 0) {
                     fotoData->totalTramas++;
                 }
-                //liberarMemoria(trama);
-                break;
-            case 'D':
-                display("recieved image trama\n");
 
                 int fd;
+                bool error = false;
 
                 char *imageName;
                 asprintf(&imageName, "%d.jpg", loginData->id);
-
-                fd = open(imageName, O_WRONLY | O_CREAT | O_APPEND, 00666);
+                fd = open(imageName, O_WRONLY | O_CREAT | O_TRUNC, 00666);
 
                 if (errorAbrir(fd)) {
-                    display("Error al guardar la imagen\n");
+                    error = true;
                 }
+                //liberarMemoria(trama);
+                break;
+            case 'D': ;
 
                 if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas-1) == i) {
                     write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
@@ -100,7 +101,20 @@ void *comprobarNombres(void *arg) {
                     i++;
                 }
 
-                close(fd);
+                if (i == fotoData->totalTramas-1 && !error) {
+                    tramaRespuesta = obtenerTrama('I', "IMATGE OK");
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    display("IMAGE OK\n");
+                    asprintf(&printf, "Guardada com %d.jpg\n\n", loginData->id);
+                    display(printf);
+                    close(fd);
+                } else if (i == fotoData->totalTramas-1 && error) {
+                    tramaRespuesta = obtenerTrama('R', "IMATGE KO");
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    display("Error File not found\n");
+                }
+
+
 
 
                 break;
