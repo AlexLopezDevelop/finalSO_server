@@ -9,16 +9,16 @@
 #include "funciones.h"
 #include "../modelos/conexion.h"
 
-Usuarios *usuario_obtener_registrados();
+Usuarios *obtenerUsuariosRegistrados();
 
-void usuario_registrar(LoginData *loginData);
+void registrarUsuario(LoginData *loginData);
 
-ListadoUsuarios *usuario_buscar(LoginData *loginData);
+ListadoUsuarios *buscarUsuarios(LoginData *loginData);
 
-int usuario_obtener_id(LoginData * loginData);
+int obtenerIdUsuario(LoginData * loginData);
 
-int usuario_existe(LoginData * loginData);
+int usuarioExiste(LoginData * loginData);
 
-void usuario_mensaje_desconectado(char * datos);
+void mensajeDesconectadoUsuario(char * datos);
 
 #endif //FINALSO_SERVER_USUARIO_H

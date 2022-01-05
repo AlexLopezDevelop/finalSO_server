@@ -9,15 +9,15 @@ int main(int argc, char *argv[]) {
 
     Configuracion configAtreides;
 
-    funciones_error_argumentos(argc, argv, 2);
+    errorArgumentos(argc, argv, 2);
 
-    funciones_display("SERVIDOR ATREIDES\n");
+    display("SERVIDOR ATREIDES\n");
 
-    if (ficheros_leer(argv[1], &configAtreides)) {
+    if (leerFichero(argv[1], &configAtreides)) {
         return 1;
     }
 
-    utils_gestor_de_sockets();
+    gestorDeSockets();
 
     return 0;
 }

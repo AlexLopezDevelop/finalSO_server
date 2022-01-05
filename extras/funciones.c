@@ -4,17 +4,17 @@
 
 #include "funciones.h"
 
-void funciones_liberar_memoria(void *ptr) {
+void liberarMemoria(void *ptr) {
     // Libermaos Memoria
     free(ptr);
     // Dejamos apuntando a NULL
     ptr = NULL;
 }
-void funciones_display(char *string) {
+void display(char *string) {
     write(1, string, sizeof(char) * strlen(string));
 }
 
-char * funciones_read_string_to (char * string, char hasta) {
+char * readStringTo (char * string, char hasta) {
     int i = 0;
     char *aux = NULL;
     char caracter = '\0';
@@ -37,7 +37,7 @@ char * funciones_read_string_to (char * string, char hasta) {
     return aux;
 }
 
-char * funciones_concat_strings_por_asterico(char * string1, char * string2) {
+char * concatStringsPorAsterico(char * string1, char * string2) {
     char * concatString = NULL;
     int stringSize = strlen(string1) + strlen(string2) + 1;
     concatString = malloc(stringSize * sizeof (char));
@@ -49,35 +49,35 @@ char * funciones_concat_strings_por_asterico(char * string1, char * string2) {
     return concatString;
 }
 
-int funciones_error_argumentos(int argc, char *argv[], int num_argumentos) {
+int errorArgumentos(int argc, char *argv[], int num_argumentos) {
 
     if (argc != num_argumentos) {
-        funciones_display("\nERROR en el numero de ficheros\n");
+        display("\nERROR en el numero de ficheros\n");
         return 1;
     } else {
         if (strcmp(argv[1], FILE1) != 0) {
-            funciones_display("\nERROR, el fichero no es correcto\n");
+            display("\nERROR, el fichero no es correcto\n");
             return 1;
         } else {
-            funciones_display("\nFicheros recibidos correctamente\n");
+            display("\nFicheros recibidos correctamente\n");
             return 0;
         }
     }
 }
 
-int funciones_error_abrir(int fd) {
+int errorAbrir(int fd) {
     char aux[200];
 
     if (fd < 0) {
         sprintf(aux, "\nERROR al abrir el fichero\n");
-        funciones_display(aux);
+        display(aux);
         return 1;
     } else {
         return 0;
     }
 }
 
-void funciones_read_input(char **string) {
+void readInput(char **string) {
     int i = 0;
     char caracter = ' ';
 
@@ -101,7 +101,7 @@ void funciones_read_input(char **string) {
     }
 }
 
-char *funciones_read_line_file(int fd, char hasta) {
+char *readLineFile(int fd, char hasta) {
     int i = 0, size;
     char c = '\0';
     char *string = (char *) malloc(sizeof(char));
@@ -123,7 +123,7 @@ char *funciones_read_line_file(int fd, char hasta) {
     return string;
 }
 
-int funciones_check_eof(int fd) {
+int checkEOF(int fd) {
     int num_bytes;
     char car;
 
@@ -141,7 +141,7 @@ int funciones_check_eof(int fd) {
     return 0;
 }
 
-int funciones_get_file_size(char *fileName) {
+int getFileSize(char *fileName) {
     struct stat sb;
 
     if (stat(fileName, &sb) == -1) {
@@ -152,7 +152,7 @@ int funciones_get_file_size(char *fileName) {
     return sb.st_size;
 }
 
-char *funciones_generate_md5sum(char *string) {
+char *generateMd5sum(char *string) {
     char *args[] = {"md5sum", string, 0};
     int fd = open(MD5FILE, O_CREAT | O_WRONLY, S_IRWXU);
     pid_t pid = fork();
@@ -167,41 +167,41 @@ char *funciones_generate_md5sum(char *string) {
 
     char *md5String = malloc(sizeof(char) * 33);
 
-    if (funciones_error_abrir(fd)) {
+    if (errorAbrir(fd)) {
         return md5String;
     }
 
-    strcpy(md5String, funciones_read_line_file(fd, ' '));
+    strcpy(md5String, readLineFile(fd, ' '));
 
     close(fd);
 
     return md5String;
 }
 
-int funciones_send_image(int socket, char *fileName) {
+int sendImage(int socket, char *fileName) {
     int picture;
 
     picture = open(fileName, O_RDONLY);
 
-    if (funciones_error_abrir(picture)) {
-        funciones_display("Error Opening Image File");
+    if (errorAbrir(picture)) {
+        display("Error Opening Image File");
         return 1;
     }
 
     char c[TRAMA_DATA_SIZE];
 
-    while (!funciones_check_eof(picture)) {
+    while (!checkEOF(picture)) {
         memset(c, 0, TRAMA_DATA_SIZE);
         read(picture, &c, sizeof(char) * TRAMA_DATA_SIZE);
 
-        char *trama = utils_obtener_trama('F', c);
+        char *trama = obtenerTrama('F', c);
         write(socket, trama, MAX_TRAMA_SIZE);
         usleep(200);
     }
 
     close(picture);
 
-    funciones_display("Foto Enviada");
+    display("Foto Enviada");
     return 0;
 }
 
