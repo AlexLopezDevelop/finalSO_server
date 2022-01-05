@@ -104,7 +104,6 @@ void *comprobarNombres(void *arg) {
                 if (i == fotoData->totalTramas && !error) {
                     tramaRespuesta = obtenerTrama('I', "IMATGE OK");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    display("IMAGE OK\n");
                     asprintf(&printf, "Guardada com %d.jpg\n\n", loginData->id);
                     display(printf);
                     close(fd);
