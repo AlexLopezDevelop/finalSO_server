@@ -93,7 +93,7 @@ void *comprobarNombres(void *arg) {
                 break;
             case 'D': ;
 
-                if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas-1) == i) {
+                if (fotoData->size % TRAMA_DATA_SIZE != 0 && fotoData->totalTramas == i) {
                     write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
                     i=0;
                 } else {
@@ -101,14 +101,14 @@ void *comprobarNombres(void *arg) {
                     i++;
                 }
 
-                if (i == fotoData->totalTramas-1 && !error) {
+                if (i == fotoData->totalTramas && !error) {
                     tramaRespuesta = obtenerTrama('I', "IMATGE OK");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                     display("IMAGE OK\n");
                     asprintf(&printf, "Guardada com %d.jpg\n\n", loginData->id);
                     display(printf);
                     close(fd);
-                } else if (i == fotoData->totalTramas-1 && error) {
+                } else if (i == fotoData->totalTramas && error) {
                     tramaRespuesta = obtenerTrama('R', "IMATGE KO");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                     display("Error File not found\n");
