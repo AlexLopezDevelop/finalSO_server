@@ -4,20 +4,20 @@
 
 #include "usuario.h"
 
-Usuarios *obtenerUsuariosRegistrados() {
+Usuarios *usuario_obtener_registrados() {
     Usuarios *usuarios = malloc(sizeof(Usuarios));
     usuarios->conectados = malloc(sizeof(LoginData));
     usuarios->totalConectados = 0;
     usuarios->registrados = malloc(sizeof(LoginData));
     usuarios->totalRegistrados = 0;
 
-    leerFicheroUsuariosRegistrados(usuarios);
+    ficheros_leer_usuarios_registrados(usuarios);
 
     return usuarios;
 }
 
-void registrarUsuario(LoginData *loginData) {
-    Usuarios *usuarios = obtenerUsuariosRegistrados();
+void usuario_registrar(LoginData *loginData) {
+    Usuarios *usuarios = usuario_obtener_registrados();
 
     // obtenemos el id para el nuevo usuario
     int userIndex = usuarios->totalRegistrados - 1;
@@ -30,11 +30,11 @@ void registrarUsuario(LoginData *loginData) {
     usuarios->registrados[totalUsuarios - 1] = *loginData;
 
     // Guardamos en fichero
-    guardarUsuariosRegistrados(usuarios);
+    ficheros_guardar_usuarios_registrados(usuarios);
 }
 
-ListadoUsuarios *buscarUsuarios(LoginData *loginData) {
-    Usuarios *usuarios = obtenerUsuariosRegistrados();
+ListadoUsuarios *usuario_buscar_registrados(LoginData *loginData) {
+    Usuarios *usuarios = usuario_obtener_registrados();
     ListadoUsuarios *listadoUsuarios = malloc(sizeof(ListadoUsuarios));
     listadoUsuarios->usuarios = malloc(sizeof(Usuarios));
     listadoUsuarios->total = 0;
@@ -51,8 +51,8 @@ ListadoUsuarios *buscarUsuarios(LoginData *loginData) {
     return listadoUsuarios;
 }
 
-int obtenerIdUsuario(LoginData *loginData) {
-    Usuarios *usuarios = obtenerUsuariosRegistrados();
+int usuario_obtener_id(LoginData *loginData) {
+    Usuarios *usuarios = usuario_obtener_registrados();
     int mismoNombre, mismoCodigoPostal;
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
@@ -67,8 +67,8 @@ int obtenerIdUsuario(LoginData *loginData) {
     return 0;
 }
 
-int usuarioExiste(LoginData *loginData) {
-    Usuarios *usuarios = obtenerUsuariosRegistrados();
+int usuario_existe(LoginData *loginData) {
+    Usuarios *usuarios = usuario_obtener_registrados();
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
         if (usuarios->registrados[i].id == loginData->id) {
@@ -78,7 +78,7 @@ int usuarioExiste(LoginData *loginData) {
     return false;
 }
 
-void mensajeDesconectadoUsuario(char *datos) {
+void usuario_mensaje_desconectado(char *datos) {
     char *nombre;
     char lineaFile[50], print[100];
     char *id;
@@ -86,7 +86,7 @@ void mensajeDesconectadoUsuario(char *datos) {
     int datosSize;
     int lineaFileSize;
 
-    strcpy(lineaFile, readStringTo(datos, '*'));
+    strcpy(lineaFile, funciones_read_string_to(datos, '*'));
     nombre = malloc(strlen(lineaFile));
     id = malloc(sizeof(char));
     strcpy(nombre, lineaFile);
@@ -98,5 +98,5 @@ void mensajeDesconectadoUsuario(char *datos) {
         id = realloc(id, sizeof(char) * indexId);
     }
     sprintf(print, "Rebut logout de %s %s\n", nombre, id);
-    display(print);
+    funciones_display(print);
 }

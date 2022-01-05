@@ -11,10 +11,10 @@
 
 #define PATH_USUARIOS_REGISTRADOS "usuariosRegistrados.txt"
 
-int leerFichero(char *pathFile, Configuracion *configuracion);
+int ficheros_leer(char *pathFile, Configuracion *configuracion);
 
-int leerFicheroUsuariosRegistrados(Usuarios * usuarios);
+int ficheros_leer_usuarios_registrados(Usuarios * usuarios);
 
-int guardarUsuariosRegistrados(Usuarios * usuarios);
+int ficheros_guardar_usuarios_registrados(Usuarios * usuarios);
 
 #endif //FINALSO_SERVER_FICHEROS_H
