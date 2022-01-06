@@ -4,6 +4,8 @@
 
 #include "usuario.h"
 
+void freeUsuarios(Usuarios *usuarios);
+
 Usuarios *usuario_obtener_registrados() {
     Usuarios *usuarios = malloc(sizeof(Usuarios));
     usuarios->conectados = malloc(sizeof(LoginData));
@@ -14,6 +16,24 @@ Usuarios *usuario_obtener_registrados() {
     ficheros_leer_usuarios_registrados(usuarios);
 
     return usuarios;
+}
+
+void freeUsuarios(Usuarios *usuarios) {
+    for (int i = 0; i < usuarios->totalRegistrados; i++) {
+        funciones_liberar_memoria(usuarios->registrados[i].nombre);
+        funciones_liberar_memoria(usuarios->registrados[i].codigoPostal);
+    }
+
+    funciones_liberar_memoria(usuarios->registrados);
+
+    for (int i = 0; i < usuarios->totalConectados; i++) {
+        funciones_liberar_memoria(usuarios->conectados[i].nombre);
+        funciones_liberar_memoria(usuarios->conectados[i].codigoPostal);
+    }
+
+    funciones_liberar_memoria(usuarios->conectados);
+
+    funciones_liberar_memoria(usuarios);
 }
 
 void usuario_registrar(LoginData *loginData) {
@@ -31,6 +51,8 @@ void usuario_registrar(LoginData *loginData) {
 
     // Guardamos en fichero
     ficheros_guardar_usuarios_registrados(usuarios);
+
+    freeUsuarios(usuarios);
 }
 
 ListadoUsuarios *usuario_buscar_registrados(LoginData *loginData) {
@@ -48,6 +70,8 @@ ListadoUsuarios *usuario_buscar_registrados(LoginData *loginData) {
         }
     }
 
+    freeUsuarios(usuarios);
+
     return listadoUsuarios;
 }
 
@@ -64,6 +88,8 @@ int usuario_obtener_id(LoginData *loginData) {
         }
     }
 
+    freeUsuarios(usuarios);
+
     return 0;
 }
 
@@ -72,9 +98,11 @@ int usuario_existe(LoginData *loginData) {
 
     for (int i = 0; i < usuarios->totalRegistrados; ++i) {
         if (usuarios->registrados[i].id == loginData->id) {
+            freeUsuarios(usuarios);
             return true;
         }
     }
+    freeUsuarios(usuarios);
     return false;
 }
 
@@ -99,4 +127,7 @@ void usuario_mensaje_desconectado(char *datos) {
     }
     sprintf(print, "Rebut logout de %s %s\n", nombre, id);
     funciones_display(print);
+
+    funciones_liberar_memoria(nombre);
+    funciones_liberar_memoria(id);
 }

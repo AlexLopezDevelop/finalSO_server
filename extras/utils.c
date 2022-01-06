@@ -62,6 +62,8 @@ FotoData *utils_destruct_data_imagen(char *datos) {
 
     fotoData->sizeTrama = fotoData->size / TRAMA_DATA_SIZE;
 
+    funciones_liberar_memoria(ptr);
+
     return fotoData;
 }
 

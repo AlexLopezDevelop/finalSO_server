@@ -11,7 +11,6 @@ typedef struct {
     int sizeTrama;
     int totalTramas;
     char * md5sum;
-    char **tramas;
 } FotoData;
 
 #endif //FINALSO_SERVER_FOTO_H
