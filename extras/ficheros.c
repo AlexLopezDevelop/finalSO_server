@@ -82,6 +82,8 @@ int ficheros_guardar_usuarios_registrados(Usuarios * usuarios) {
     }
 
     int totalUsuarios = usuarios->totalRegistrados;
+
+    // TODO: quitar estatico
     char aux[100];
 
     // numero total de registrados

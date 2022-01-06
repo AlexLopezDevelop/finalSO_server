@@ -62,6 +62,8 @@ FotoData *utils_destruct_data_imagen(char *datos) {
 
     fotoData->sizeTrama = fotoData->size / TRAMA_DATA_SIZE;
 
+    funciones_liberar_memoria(ptr);
+
     return fotoData;
 }
 
@@ -149,6 +151,7 @@ LoginData *utils_destruct_data_search(char *tramaDatos) {
     bool isCodigoPostal = false, isId = false;
     int idIndex = 0, cpIndex = 0;
     int sizeDatos = strlen(tramaDatos);
+    // TODO: quitar estatico
     char auxId[100];
 
     LoginData *loginData;
@@ -184,6 +187,7 @@ LoginData *utils_destruct_data_search(char *tramaDatos) {
 
 char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios) {
     char *data = malloc(sizeof(char));
+    // TODO: quitar estatico
     char stringAux[100];
     int dataSize;
     int nombreSize;

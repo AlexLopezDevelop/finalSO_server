@@ -17,7 +17,6 @@ void *menu_comprobar_nombres(void *arg) {
     int i = 0;
 
     FotoData *fotoData = malloc(sizeof(FotoData));
-    fotoData->tramas = malloc(sizeof(char *));
     fotoData->sizeTrama = 0;
     fotoData->totalTramas = 0;
 
@@ -47,6 +46,10 @@ void *menu_comprobar_nombres(void *arg) {
                 tramaRespuesta = utils_obtener_trama('O', idString);
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 funciones_display("Send answer\n\n");
+
+                funciones_liberar_memoria(loginData->nombre);
+                funciones_liberar_memoria(loginData->codigoPostal);
+                //funciones_liberar_memoria(loginData);
                 break;
             case 'S':  //search
                 if (!usuario_existe(loginData)) {
@@ -65,6 +68,7 @@ void *menu_comprobar_nombres(void *arg) {
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 }
 
+                funciones_liberar_memoria(data);
                 break;
             case 'F': //send
                 funciones_display("Rebut send ");
@@ -89,7 +93,9 @@ void *menu_comprobar_nombres(void *arg) {
                 if (funciones_error_abrir(fd)) {
                     error = true;
                 }
-                //funciones_liberar_memoria(trama);
+
+                funciones_liberar_memoria(printf);
+                funciones_liberar_memoria(imageName);
                 break;
             case 'D':
 
@@ -114,12 +120,10 @@ void *menu_comprobar_nombres(void *arg) {
                     funciones_display("Error File not found\n");
                 }
 
-
-
-
                 break;
             case 'P': //photo
                 funciones_display("recieved PHOTO download request\n");
+                // TODO: quitar estatico
                 char sizeFileString[100];
 
                 char *imagePath;
@@ -138,6 +142,10 @@ void *menu_comprobar_nombres(void *arg) {
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
 
                 funciones_send_image(clientFD, imagePath);
+
+                funciones_liberar_memoria(imagePath);
+                funciones_liberar_memoria(md5File);
+                funciones_liberar_memoria(dataImage);
 
                 break;
             case 'Q':   //logout
@@ -158,12 +166,20 @@ void *menu_comprobar_nombres(void *arg) {
     pthread_cancel(pthread_self());
     pthread_detach(pthread_self());
 
+
+    funciones_liberar_memoria(conexionData);
+    funciones_liberar_memoria(tramaRespuesta);
+    funciones_liberar_memoria(trama);
+    funciones_liberar_memoria(fotoData->nombre);
+    funciones_liberar_memoria(fotoData->md5sum);
     return NULL;
 }
 
 char *menu_opcion_buscar_usuario(ConexionData *conexionData) {
     LoginData *loginData = utils_destruct_data_search(conexionData->datos);
     ListadoUsuarios *listadoUsuarios = usuario_buscar_registrados(loginData);
+
+    // TODO: quitar estatico
     char print[200];
     char auxid[30];
 
