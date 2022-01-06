@@ -67,7 +67,7 @@ void *menu_comprobar_nombres(void *arg) {
 
                 break;
             case 'F': //send
-                funciones_display("Rebut send ");
+                funciones_display("Recieved send ");
 
                 fotoData = utils_destruct_data_imagen(conexionData->datos);
                 char *printf;
@@ -93,11 +93,11 @@ void *menu_comprobar_nombres(void *arg) {
                 break;
             case 'D':
 
-                if (fotoData->size % TRAMA_DATA_SIZE != 0 && fotoData->totalTramas == i) {
-                    write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
+                if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas) == i) {
+                    write(fd, conexionData->datos, (fotoData->size % TRAMA_DATA_SIZE));
                     i=0;
                 } else {
-                    write(fd, conexionData->datos, sizeof (char) *TRAMA_DATA_SIZE);
+                    write(fd, conexionData->datos, TRAMA_DATA_SIZE);
                     i++;
                 }
 
@@ -118,7 +118,10 @@ void *menu_comprobar_nombres(void *arg) {
 
                 break;
             case 'P': //photo
-                funciones_display("recieved PHOTO download request\n");
+                funciones_display("Recieved photo ");
+                char *printphoto;
+                asprintf(&printphoto, "%s de %s %d\n", conexionData->datos, loginData->nombre, loginData->id);
+                funciones_display(printphoto);
                 char sizeFileString[100];
 
                 char *imagePath;
@@ -128,10 +131,10 @@ void *menu_comprobar_nombres(void *arg) {
                 sprintf(sizeFileString, "%d", sizeFile);
                 funciones_display(sizeFileString);
 
-                char *md5File = funciones_generate_md5sum(imagePath);
+                char *md5FilePhoto = funciones_generate_md5sum(imagePath);
 
                 char *dataImage;
-                asprintf(&dataImage, "%s*%s*%s", imagePath, sizeFileString, md5File);
+                asprintf(&dataImage, "%s*%s*%s", imagePath, sizeFileString, md5FilePhoto);
 
                 tramaRespuesta = utils_obtener_trama('P', dataImage);
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
