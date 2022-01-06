@@ -7,42 +7,42 @@
 
 #define MAX_LINEA_FILE 200
 
-int leerFichero(char *pathFile, Configuracion *configuracion) {
+int ficheros_leer(char *pathFile, Configuracion *configuracion) {
 
     int fd;
     char lineaFile[250];
 
     fd = open(pathFile, O_RDONLY);
 
-    if (errorAbrir(fd)) {
+    if (funciones_error_abrir(fd)) {
         return 1;
     }
 
-    while (!checkEOF(fd)) {
-        strcpy(lineaFile, readLineFile(fd, '\n'));
+    while (!funciones_check_eof(fd)) {
+        strcpy(lineaFile, funciones_read_line_file(fd, '\n'));
         configuracion->ip = malloc(sizeof(char) * strlen(lineaFile) + 1);
-        strcpy(configuracion->ip, readLineFile(fd, '\n'));
-        configuracion->puerto = atoi(readLineFile(fd, '\n'));
-        strcpy(lineaFile, readLineFile(fd, '\n'));
+        strcpy(configuracion->ip, funciones_read_line_file(fd, '\n'));
+        configuracion->puerto = atoi(funciones_read_line_file(fd, '\n'));
+        strcpy(lineaFile, funciones_read_line_file(fd, '\n'));
         configuracion->directorio = malloc(sizeof(char) * strlen(lineaFile) + 1);
-        strcpy(configuracion->directorio, readLineFile(fd, '\n'));
+        strcpy(configuracion->directorio, funciones_read_line_file(fd, '\n'));
 
     }
 
     return 0;
 }
 
-int leerFicheroUsuariosRegistrados(Usuarios * usuarios) {
+int ficheros_leer_usuarios_registrados(Usuarios * usuarios) {
 
     int fd;
 
     fd = open(PATH_USUARIOS_REGISTRADOS, O_RDONLY);
 
-    if (errorAbrir(fd)) {
+    if (funciones_error_abrir(fd)) {
         return 1;
     }
 
-    int totalUsuarios = atoi(readLineFile(fd, '\n'));
+    int totalUsuarios = atoi(funciones_read_line_file(fd, '\n'));
 
     if (totalUsuarios == 0) { // no hay usuarios registrados
         return 0;
@@ -54,16 +54,16 @@ int leerFicheroUsuariosRegistrados(Usuarios * usuarios) {
     int i = 0;
     char lineaFile[MAX_LINEA_FILE];
 
-    while (!checkEOF(fd)) {
-        usuarios->registrados[i].id = atoi(readLineFile(fd, '\n')); // id
+    while (!funciones_check_eof(fd)) {
+        usuarios->registrados[i].id = atoi(funciones_read_line_file(fd, '\n')); // id
 
         // nombre
-        strcpy(lineaFile, readLineFile(fd, '\n'));
+        strcpy(lineaFile, funciones_read_line_file(fd, '\n'));
         usuarios->registrados[i].nombre = malloc(strlen(lineaFile)+1);
         strcpy(usuarios->registrados[i].nombre, lineaFile);
 
         // codigo postal
-        strcpy(lineaFile, readLineFile(fd, '\n'));
+        strcpy(lineaFile, funciones_read_line_file(fd, '\n'));
         usuarios->registrados[i].codigoPostal = malloc(strlen(lineaFile)+1);
         strcpy(usuarios->registrados[i].codigoPostal, lineaFile);
         i++;
@@ -72,12 +72,12 @@ int leerFicheroUsuariosRegistrados(Usuarios * usuarios) {
     return 0;
 }
 
-int guardarUsuariosRegistrados(Usuarios * usuarios) {
+int ficheros_guardar_usuarios_registrados(Usuarios * usuarios) {
     int fd;
     
     fd = open(PATH_USUARIOS_REGISTRADOS, O_WRONLY|O_CREAT|O_TRUNC, 00666);
 
-    if (errorAbrir(fd)) {
+    if (funciones_error_abrir(fd)) {
         return 1;
     }
 
