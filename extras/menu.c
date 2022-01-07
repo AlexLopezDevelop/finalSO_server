@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "utils.h"
 #include "funciones.h"
+#include <stdbool.h>
 
 void *menu_comprobar_nombres(void *arg) {
     int clientFD = *(int *) arg;
@@ -99,26 +100,28 @@ void *menu_comprobar_nombres(void *arg) {
                 break;
             case 'D':
 
-                if (fotoData->size % TRAMA_DATA_SIZE != 0 && fotoData->totalTramas == i) {
+                getImageFromClient(fotoData, conexionData, clientFD);
+
+                /*if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas+4) == i) {
                     write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
-                    i=0;
+                    //i=0;
                 } else {
                     write(fd, conexionData->datos, sizeof (char) *TRAMA_DATA_SIZE);
                     i++;
                 }
 
-                if (i == fotoData->totalTramas && !error) {
+                if (i == (fotoData->totalTramas+4) && !error) {
                     tramaRespuesta = utils_obtener_trama('I', "IMATGE OK");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                     funciones_display("IMAGE OK\n");
                     asprintf(&printf, "Guardada com %d.jpg\n\n", loginData->id);
                     funciones_display(printf);
                     close(fd);
-                } else if (i == fotoData->totalTramas && error) {
+                } else if (i == (fotoData->totalTramas-1) && error) {
                     tramaRespuesta = utils_obtener_trama('R', "IMATGE KO");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                     funciones_display("Error File not found\n");
-                }
+                }*/
 
                 break;
             case 'P': //photo
@@ -129,23 +132,36 @@ void *menu_comprobar_nombres(void *arg) {
                 char *imagePath;
                 asprintf(&imagePath, "%s.jpg", conexionData->datos);
 
-                int sizeFile = funciones_get_file_size(imagePath);
-                sprintf(sizeFileString, "%d", sizeFile);
-                funciones_display(sizeFileString);
+                int picture;
 
-                char *md5File = funciones_generate_md5sum(imagePath);
+                picture = open(imagePath, O_RDONLY);
 
-                char *dataImage;
-                asprintf(&dataImage, "%s*%s*%s", imagePath, sizeFileString, md5File);
+                //check if file exist
+                if (funciones_error_abrir(picture)) {
+                    funciones_display("Error Opening Image File");
 
-                tramaRespuesta = utils_obtener_trama('P', dataImage);
-                write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    tramaRespuesta = utils_obtener_trama('F', "FILE NOT FOUND");
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
 
-                funciones_send_image(clientFD, imagePath);
+                } else {
+                    int sizeFile = funciones_get_file_size(imagePath);
+                    sprintf(sizeFileString, "%d", sizeFile);
+                    funciones_display(sizeFileString);
 
-                funciones_liberar_memoria(imagePath);
-                funciones_liberar_memoria(md5File);
-                funciones_liberar_memoria(dataImage);
+                    char *md5File = funciones_generate_md5sum(imagePath);
+
+                    char *dataImage;
+                    asprintf(&dataImage, "%s*%s*%s", imagePath, sizeFileString, md5File);
+
+                    tramaRespuesta = utils_obtener_trama('F', dataImage);
+                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+
+                    funciones_send_image(clientFD, imagePath);
+
+                    //funciones_liberar_memoria(imagePath);
+                    //funciones_liberar_memoria(md5File);
+                    //funciones_liberar_memoria(dataImage);
+                }
 
                 break;
             case 'Q':   //logout

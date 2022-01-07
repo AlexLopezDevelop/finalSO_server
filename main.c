@@ -9,12 +9,14 @@ int main(int argc, char *argv[]) {
 
     Configuracion configAtreides;
 
-    funciones_error_argumentos(argc, argv, 2);
+    if(funciones_error_argumentos(argc, argv, 2)) {
+        exit(1);
+    }
 
     funciones_display("SERVIDOR ATREIDES\n");
 
     if (ficheros_leer(argv[1], &configAtreides)) {
-        return 1;
+        exit(1);
     }
 
     utils_gestor_de_sockets();
