@@ -104,12 +104,11 @@ char *crearTrama(char *origen, char tipo, char *data) {
     char *trama = NULL;
     trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
 
-    int origenSize = strlen(origen);
     int tipoSize = 1;
-    int dataSize = strlen(data);
+    int origenSize = strlen(origen);
 
     // origen
-    for (int i = 0; i < TRAMA_ORIGEN_SIZE; ++i) {
+    for (int i = 0; i < TRAMA_ORIGEN_SIZE; i++) {
         if (i < origenSize) {
             trama[i] = origen[i];
         } else {
@@ -130,7 +129,9 @@ char *crearTrama(char *origen, char tipo, char *data) {
             dataIndex++;
         }
     } else {
-        for (int i = TRAMA_ORIGEN_SIZE + tipoSize; i < TRAMA_DATA_SIZE; ++i) {
+        int dataSize = strlen(data);
+
+        for (int i = TRAMA_ORIGEN_SIZE + tipoSize; i < MAX_TRAMA_SIZE; i++) {
             if (dataIndex < dataSize) {
                 trama[i] = data[dataIndex];
                 dataIndex++;
@@ -148,94 +149,39 @@ char *utils_obtener_trama(char tipo, char *data) {
 }
 
 LoginData *utils_destruct_data_search(char *tramaDatos) {
-    bool isCodigoPostal = false, isId = false;
-    int idIndex = 0, cpIndex = 0;
-    int sizeDatos = strlen(tramaDatos);
-    // TODO: quitar estatico
-    char auxId[100];
+    char delim[] = "*";
+    char *ptr = strtok(tramaDatos, delim);
 
     LoginData *loginData;
     loginData = malloc(sizeof(LoginData));
-    loginData->nombre = malloc(sizeof(char));
-    loginData->codigoPostal = malloc(sizeof(char));
 
-    for (int i = 0; i < sizeDatos; ++i) {
-        if (tramaDatos[i] == '*' && (isCodigoPostal == false && isId == false)) {
-            loginData->nombre[i] = '\0';
-            isId = true;
-        } else if (tramaDatos[i] == '*' && isId == true) {
-            isCodigoPostal = true;
-        } else if (isCodigoPostal == false && isId == false) {
-            loginData->nombre[i] = tramaDatos[i];
-            loginData->nombre = realloc(loginData->nombre, sizeof(char) * (i + 2));
-        } else if (isCodigoPostal == false && isId == true) {
-            auxId[idIndex] = tramaDatos[i];
-            idIndex++;
-        } else {
-            loginData->codigoPostal[cpIndex] = tramaDatos[i];
-            loginData->codigoPostal = realloc(loginData->codigoPostal, sizeof(char) * (cpIndex + 2));
-            cpIndex++;
-            if (i + 1 == sizeDatos) { // final del string
-                loginData->codigoPostal[cpIndex] = '\0';
-            }
-        }
-        loginData->id = atoi(auxId);
+    while (ptr != NULL) {
+        loginData->nombre = strdup(ptr);
+        ptr = strtok(NULL, delim);
+        loginData->id = atoi(ptr);
+        ptr = strtok(NULL, delim);
+        loginData->codigoPostal = strdup(ptr);
+        ptr = strtok(NULL, delim);
     }
 
     return loginData;
 }
 
 char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios) {
-    char *data = malloc(sizeof(char));
-    // TODO: quitar estatico
-    char stringAux[100];
-    int dataSize;
-    int nombreSize;
-    int stringAuxSize;
+    char *data;
+    char *newdata;
 
-    // total usuarios
-    sprintf(stringAux, "%d", listadoUsuarios->total);
-    dataSize = strlen(stringAux);
-    data = realloc(data, sizeof(char) * dataSize);
-    strcpy(data, stringAux);
-
-    // *
-    dataSize++;
-    data = realloc(data, sizeof(char) * dataSize);
-    data[dataSize - 1] = '*';
+    asprintf(&data, "%d*", listadoUsuarios->total);
 
     // Usuarios
     if (listadoUsuarios->total != 0) {
         for (int i = 0; i < listadoUsuarios->total; ++i) {
-
-            // Nombre
-            nombreSize = (int) strlen(listadoUsuarios->usuarios[i].nombre);
-            for (int j = 0; j < nombreSize; ++j) {
-                dataSize++;
-                data = realloc(data, sizeof(char) * dataSize);
-                data[dataSize - 1] = listadoUsuarios->usuarios[i].nombre[j];
-            }
-
-            // *
-            dataSize++;
-            data = realloc(data, sizeof(char) * dataSize);
-            data[dataSize - 1] = '*';
-
-            // id
-            sprintf(stringAux, "%d", listadoUsuarios->usuarios[i].id);
-            stringAuxSize = (int) strlen(stringAux);
-            for (int j = 0; j < stringAuxSize; ++j) {
-                dataSize++;
-                data = realloc(data, sizeof(char) * dataSize);
-                data[dataSize - 1] = stringAux[j];
-            }
-
-            // controlar asterisco final
-            if (listadoUsuarios->total != i) {
-                // *
-                dataSize++;
-                data = realloc(data, sizeof(char) * dataSize);
-                data[dataSize - 1] = '*';
+            if (i == listadoUsuarios->total-1){
+                asprintf(&newdata, "%s*%d", listadoUsuarios->usuarios[i].nombre,listadoUsuarios->usuarios[i].id);
+                asprintf(&data,"%s%s",data,newdata);
+            } else {
+                asprintf(&newdata, "%s*%d*", listadoUsuarios->usuarios[i].nombre,listadoUsuarios->usuarios[i].id);
+                asprintf(&data,"%s%s",data,newdata);
             }
         }
     } else {

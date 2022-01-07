@@ -72,7 +72,7 @@ void *menu_comprobar_nombres(void *arg) {
                 funciones_liberar_memoria(data);
                 break;
             case 'F': //send
-                funciones_display("Rebut send ");
+                funciones_display("Recieved send ");
 
                 fotoData = utils_destruct_data_imagen(conexionData->datos);
                 char *printf;
@@ -106,14 +106,13 @@ void *menu_comprobar_nombres(void *arg) {
                     write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
                     //i=0;
                 } else {
-                    write(fd, conexionData->datos, sizeof (char) *TRAMA_DATA_SIZE);
+                    write(fd, conexionData->datos, TRAMA_DATA_SIZE);
                     i++;
                 }
 
                 if (i == (fotoData->totalTramas+4) && !error) {
                     tramaRespuesta = utils_obtener_trama('I', "IMATGE OK");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    funciones_display("IMAGE OK\n");
                     asprintf(&printf, "Guardada com %d.jpg\n\n", loginData->id);
                     funciones_display(printf);
                     close(fd);
@@ -125,7 +124,11 @@ void *menu_comprobar_nombres(void *arg) {
 
                 break;
             case 'P': //photo
-                funciones_display("recieved PHOTO download request\n");
+                funciones_display("Recieved photo ");
+                char *printphoto;
+                asprintf(&printphoto, "%s de %s %d\n", conexionData->datos, loginData->nombre, loginData->id);
+                funciones_display(printphoto);
+
                 // TODO: quitar estatico
                 char sizeFileString[100];
 
