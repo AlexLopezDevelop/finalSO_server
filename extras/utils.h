@@ -27,4 +27,6 @@ LoginData *utils_destruct_data(char *datos);
 
 ConexionData *utils_guardar_trama(const char *trama);
 
+void utils_comparar_md5sum(int clientFD, char *trama, FotoData *fotoData, char * imageName);
+
 #endif //FINALSO_SERVER_UTILS_H

@@ -7,6 +7,32 @@
 #include "funciones.h"
 #include <stdbool.h>
 
+ConexionData *ficheros_guardar_trama(const char *trama) {
+    ConexionData *conexionData;
+    conexionData = malloc(sizeof(ConexionData));
+
+    // obtener origen
+    for (int i = 0; i < TRAMA_ORIGEN_SIZE; ++i) {
+        conexionData->origen[i] = trama[i];
+        if (trama[i] == '\0') {
+            break;
+        }
+    }
+
+    // obtener tipo
+    conexionData->tipo = trama[TRAMA_ORIGEN_SIZE];
+
+    // obtener data
+    int dataIndex = 0;
+
+    for (int i = TRAMA_ORIGEN_SIZE + 1; i < MAX_TRAMA_SIZE; ++i) {
+        conexionData->datos[dataIndex] = trama[i];
+        dataIndex++;
+    }
+
+    return conexionData;
+}
+
 void *menu_comprobar_nombres(void *arg) {
     int clientFD = *(int *) arg;
     int salir = 0;
@@ -79,28 +105,54 @@ void *menu_comprobar_nombres(void *arg) {
                 asprintf(&printf, "%s de %s %d\n", fotoData->nombre, loginData->nombre, loginData->id);
                 funciones_display(printf);
 
+                bool descargandoImagen = true;
+                char tramaImagen[MAX_TRAMA_SIZE];
+
                 fotoData->totalTramas = fotoData->size / TRAMA_DATA_SIZE;
                 if (fotoData->size % TRAMA_DATA_SIZE != 0) {
                     fotoData->totalTramas++;
                 }
 
-                int fd;
-                bool error = false;
-
                 char *imageName;
                 asprintf(&imageName, "%d.jpg", loginData->id);
-                fd = open(imageName, O_WRONLY | O_CREAT | O_TRUNC, 00666);
 
-                if (funciones_error_abrir(fd)) {
-                    error = true;
+                remove(imageName);
+
+                while (descargandoImagen) {
+                    memset(tramaImagen, 0, TRAMA_DATA_SIZE);
+                    memset(conexionData, 0, sizeof(ConexionData));
+
+                    read(clientFD, tramaImagen, MAX_TRAMA_SIZE);
+                    conexionData = ficheros_guardar_trama(tramaImagen);
+
+                    int fd;
+
+                    fd = open(imageName, O_WRONLY | O_CREAT | O_APPEND, 00666);
+
+                    if (funciones_error_abrir(fd)) {
+                        funciones_display("Error al guardar la imagen\n");
+                    }
+
+                    if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas-1) == i) {
+                        write(fd, conexionData->datos, sizeof(char) * (fotoData->size % TRAMA_DATA_SIZE));
+                        i = 0;
+                        descargandoImagen = false;
+                        utils_comparar_md5sum(clientFD, trama, fotoData, imageName);
+                    } else {
+                        if ((fotoData->totalTramas-1) == i) {
+                            descargandoImagen = false;
+                            utils_comparar_md5sum(clientFD, trama, fotoData, imageName);
+                        }
+                        write(fd, conexionData->datos, sizeof(char) * TRAMA_DATA_SIZE);
+                        i++;
+                    }
+
+                    close(fd);
                 }
-
-                funciones_liberar_memoria(printf);
-                funciones_liberar_memoria(imageName);
                 break;
             case 'D':
 
-                getImageFromClient(fotoData, conexionData, clientFD);
+                //getImageFromClient(fotoData, conexionData, clientFD);
 
                 /*if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas+4) == i) {
                     write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));

@@ -232,3 +232,12 @@ int utils_gestor_de_sockets() {
         pthread_create(&thrd, NULL, menu_comprobar_nombres, (void *) &clientFD);
     }
 }
+
+
+void utils_comparar_md5sum(int clientFD, char *trama, FotoData *fotoData, char * fileName) {
+    char *md5File = funciones_generate_md5sum(fileName);
+    if (strcmp(fotoData->md5sum, md5File) == 0) {
+        trama = utils_obtener_trama('I', "IMAGE OK");
+        write(clientFD, trama, MAX_TRAMA_SIZE);
+    }
+}
