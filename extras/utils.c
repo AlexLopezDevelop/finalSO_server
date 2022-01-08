@@ -167,26 +167,45 @@ LoginData *utils_destruct_data_search(char *tramaDatos) {
     return loginData;
 }
 
-char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios) {
-    char *data;
-    char *newdata;
+void sendTrama(char * data, int clientFD) {
+    char *tramaRespuesta = NULL;
+    tramaRespuesta = utils_obtener_trama('L', data);
+    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+    funciones_display("\nSend answer\n\n");
+}
 
-    asprintf(&data, "%d*", listadoUsuarios->total);
+char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios, int clientFD) {
+    char *data = "";
+    char *userData;
+    char *dataAux;
+    int usersSend = 0;
+
+    //asprintf(&data, "%d*", listadoUsuarios->total);
 
     // Usuarios
-    if (listadoUsuarios->total != 0) {
-        for (int i = 0; i < listadoUsuarios->total; ++i) {
-            if (i == listadoUsuarios->total-1){
-                asprintf(&newdata, "%s*%d", listadoUsuarios->usuarios[i].nombre,listadoUsuarios->usuarios[i].id);
-                asprintf(&data,"%s%s",data,newdata);
+
+    for (int i = 0; i < listadoUsuarios->total; ++i) {
+        asprintf(&userData, "%s*%d", listadoUsuarios->usuarios[i].nombre, listadoUsuarios->usuarios[i].id);
+        asprintf(&dataAux, "%s%s", data, userData);
+        if (strlen(dataAux) < TRAMA_DATA_SIZE) {
+            if (i == listadoUsuarios->total - 1) {
+                //asprintf(&userData, "%s*%d", listadoUsuarios->usuarios[i].nombre, listadoUsuarios->usuarios[i].id);
+                asprintf(&data, "%s*%s", data, userData);
+                asprintf(&dataAux, "%d%s", ((i+1) - usersSend), data);
+                sendTrama(dataAux, clientFD);
             } else {
-                asprintf(&newdata, "%s*%d*", listadoUsuarios->usuarios[i].nombre,listadoUsuarios->usuarios[i].id);
-                asprintf(&data,"%s%s",data,newdata);
+                //asprintf(&userData, "%s*%d*", listadoUsuarios->usuarios[i].nombre, listadoUsuarios->usuarios[i].id);
+                asprintf(&data, "%s*%s", data, userData);
             }
+        } else {
+            i--;
+            asprintf(&dataAux, "%d%s", ((i+1) - usersSend), data);
+            sendTrama(dataAux, clientFD);
+            data = "";
+            usersSend = i+1;
         }
-    } else {
-        data = "0";
     }
+
 
     return data;
 }
@@ -234,7 +253,7 @@ int utils_gestor_de_sockets() {
 }
 
 
-void utils_comparar_md5sum(int clientFD, char *trama, FotoData *fotoData, char * fileName) {
+void utils_comparar_md5sum(int clientFD, char *trama, FotoData *fotoData, char *fileName) {
     char *md5File = funciones_generate_md5sum(fileName);
     if (strcmp(fotoData->md5sum, md5File) == 0) {
         trama = utils_obtener_trama('I', "IMAGE OK");

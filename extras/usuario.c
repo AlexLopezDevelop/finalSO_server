@@ -70,7 +70,7 @@ ListadoUsuarios *usuario_buscar_registrados(LoginData *loginData) {
         }
     }
 
-    freeUsuarios(usuarios);
+    //freeUsuarios(usuarios);
 
     return listadoUsuarios;
 }

@@ -85,17 +85,17 @@ void *menu_comprobar_nombres(void *arg) {
                     break;
                 }
                 funciones_display("Buscando usuarios\n");
-                char *data = menu_opcion_buscar_usuario(conexionData);
-                if (data[0] != '0') {
-                    tramaRespuesta = utils_obtener_trama('L', data);
+                ListadoUsuarios *listadoUsuarios = menu_opcion_buscar_usuario(conexionData);
+                if (listadoUsuarios->total != 0) {
+                    utils_crear_data_search(listadoUsuarios, clientFD);
+                    /*tramaRespuesta = utils_obtener_trama('L', data);
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    funciones_display("\nSend answer\n\n");
+                    funciones_display("\nSend answer\n\n");*/
                 } else {
-                    tramaRespuesta = utils_obtener_trama('K', data);
+                    tramaRespuesta = utils_obtener_trama('K', "0");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 }
 
-                funciones_liberar_memoria(data);
                 break;
             case 'F': //send
                 funciones_display("Recieved send ");
@@ -246,7 +246,7 @@ void *menu_comprobar_nombres(void *arg) {
     return NULL;
 }
 
-char *menu_opcion_buscar_usuario(ConexionData *conexionData) {
+ListadoUsuarios *menu_opcion_buscar_usuario(ConexionData *conexionData) {
     LoginData *loginData = utils_destruct_data_search(conexionData->datos);
     ListadoUsuarios *listadoUsuarios = usuario_buscar_registrados(loginData);
 
@@ -276,5 +276,5 @@ char *menu_opcion_buscar_usuario(ConexionData *conexionData) {
         }
     }
 
-    return utils_crear_data_search(listadoUsuarios);
+    return listadoUsuarios;
 }

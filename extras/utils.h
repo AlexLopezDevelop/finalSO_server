@@ -15,7 +15,7 @@ int utils_gestor_de_sockets();
 
 char * utils_concatenar_strings(char **instruccion);
 
-char * utils_crear_data_search(ListadoUsuarios * listadoUsuarios);
+char * utils_crear_data_search(ListadoUsuarios * listadoUsuarios, int clientFD);
 
 FotoData *utils_destruct_data_imagen(char *datos);
 

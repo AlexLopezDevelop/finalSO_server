@@ -202,6 +202,7 @@ int funciones_send_image(int socket, char *fileName) {
 
     close(picture);
 
+    funciones_display("Foto Enviada");
     return 0;
 }
 
