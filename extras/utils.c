@@ -178,7 +178,7 @@ char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios, int clientFD) {
     char *data = "";
     char *userData;
     char *dataAux;
-    int usersSend = 0;
+    bool firstSend = true;
 
     //asprintf(&data, "%d*", listadoUsuarios->total);
 
@@ -189,20 +189,31 @@ char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios, int clientFD) {
         asprintf(&dataAux, "%s%s", data, userData);
         if (strlen(dataAux) < TRAMA_DATA_SIZE) {
             if (i == listadoUsuarios->total - 1) {
-                //asprintf(&userData, "%s*%d", listadoUsuarios->usuarios[i].nombre, listadoUsuarios->usuarios[i].id);
                 asprintf(&data, "%s*%s", data, userData);
-                asprintf(&dataAux, "%d%s", ((i+1) - usersSend), data);
-                sendTrama(dataAux, clientFD);
+                if (firstSend) {
+                    asprintf(&dataAux, "%d%s", listadoUsuarios->total, data);
+                    sendTrama(dataAux, clientFD);
+                    firstSend = false;
+                } else {
+                    sendTrama(data, clientFD);
+                }
             } else {
-                //asprintf(&userData, "%s*%d*", listadoUsuarios->usuarios[i].nombre, listadoUsuarios->usuarios[i].id);
-                asprintf(&data, "%s*%s", data, userData);
+                if (!firstSend && strcmp(data, "") == 0) {
+                    asprintf(&data, "%s%s", data, userData);
+                } else {
+                    asprintf(&data, "%s*%s", data, userData);
+                }
             }
         } else {
-            i--;
-            asprintf(&dataAux, "%d%s", ((i+1) - usersSend), data);
-            sendTrama(dataAux, clientFD);
+            if (firstSend) {
+                asprintf(&dataAux, "%d%s", listadoUsuarios->total, data);
+                sendTrama(dataAux, clientFD);
+                firstSend = false;
+            } else {
+                sendTrama(data, clientFD);
+            }
             data = "";
-            usersSend = i+1;
+            i--;
         }
     }
 
