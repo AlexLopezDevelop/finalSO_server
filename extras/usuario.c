@@ -6,6 +6,7 @@
 
 void freeUsuarios(Usuarios *usuarios);
 
+// devuelve los usuarios registrados
 Usuarios *usuario_obtener_registrados() {
     Usuarios *usuarios = malloc(sizeof(Usuarios));
     usuarios->conectados = malloc(sizeof(LoginData));
@@ -18,6 +19,7 @@ Usuarios *usuario_obtener_registrados() {
     return usuarios;
 }
 
+// libera la memoria de un struct de usuarios
 void freeUsuarios(Usuarios *usuarios) {
     for (int i = 0; i < usuarios->totalRegistrados; i++) {
         funciones_liberar_memoria(usuarios->registrados[i].nombre);
@@ -36,6 +38,7 @@ void freeUsuarios(Usuarios *usuarios) {
     funciones_liberar_memoria(usuarios);
 }
 
+// guarda un usuario nuevo en el registro de usuarios
 void usuario_registrar(LoginData *loginData) {
     Usuarios *usuarios = usuario_obtener_registrados();
 
@@ -55,6 +58,7 @@ void usuario_registrar(LoginData *loginData) {
     freeUsuarios(usuarios);
 }
 
+// devuelve el listado de usuarios registrados
 ListadoUsuarios *usuario_buscar_registrados(LoginData *loginData) {
     Usuarios *usuarios = usuario_obtener_registrados();
     ListadoUsuarios *listadoUsuarios = malloc(sizeof(ListadoUsuarios));
@@ -75,6 +79,7 @@ ListadoUsuarios *usuario_buscar_registrados(LoginData *loginData) {
     return listadoUsuarios;
 }
 
+// devuelve el id del usuario
 int usuario_obtener_id(LoginData *loginData) {
     Usuarios *usuarios = usuario_obtener_registrados();
     int mismoNombre, mismoCodigoPostal;
@@ -93,6 +98,7 @@ int usuario_obtener_id(LoginData *loginData) {
     return 0;
 }
 
+// devuelve si el usuario existe en el registro de usuarios
 int usuario_existe(LoginData *loginData) {
     Usuarios *usuarios = usuario_obtener_registrados();
 
@@ -106,6 +112,7 @@ int usuario_existe(LoginData *loginData) {
     return false;
 }
 
+// controla la salida de un cliente del servidor
 void usuario_mensaje_desconectado(char *datos) {
     char *nombre;
     char lineaFile[50], print[100];
@@ -120,6 +127,7 @@ void usuario_mensaje_desconectado(char *datos) {
     strcpy(nombre, lineaFile);
     datosSize = (int) strlen(datos);
     lineaFileSize = (int) strlen(lineaFile);
+
     for (int i = lineaFileSize + 1; i < datosSize; ++i) {
         id[indexId] = datos[i];
         indexId++;

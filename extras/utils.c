@@ -10,6 +10,7 @@
 
 int listenFD;
 
+// se le pasa una trama y la devuelve la informacion en un struct
 ConexionData *utils_guardar_trama(const char *trama) {
     ConexionData *conexionData;
     conexionData = malloc(sizeof(ConexionData));
@@ -46,6 +47,7 @@ ConexionData *utils_guardar_trama(const char *trama) {
     return conexionData;
 }
 
+// devuelve un struct con los datos de la trama de imagen
 FotoData *utils_destruct_data_imagen(char *datos) {
     FotoData *fotoData = malloc(sizeof(FotoData));
     char delim[] = "*";
@@ -69,6 +71,7 @@ FotoData *utils_destruct_data_imagen(char *datos) {
     return fotoData;
 }
 
+// devuelve un struct con los datos de la trama de imagen
 LoginData *utils_destruct_data(char *datos) {
     LoginData *loginData = malloc(sizeof(LoginData));
 
@@ -85,6 +88,7 @@ LoginData *utils_destruct_data(char *datos) {
     return loginData;
 }
 
+// crea una trama para enviar al servidor con toda la informacion necesaria
 char *crearTrama(char *origen, char tipo, char *data) {
     char *trama = NULL;
     trama = malloc(sizeof(char) * MAX_TRAMA_SIZE);
@@ -103,7 +107,6 @@ char *crearTrama(char *origen, char tipo, char *data) {
 
     // tipo
     trama[TRAMA_ORIGEN_SIZE] = tipo;
-
 
     // data
     int dataIndex = 0;
@@ -129,10 +132,12 @@ char *crearTrama(char *origen, char tipo, char *data) {
     return trama;
 }
 
+// devuelve el struct con la informacion base para el envio
 char *utils_obtener_trama(char tipo, char *data) {
     return crearTrama("ATREIDES", tipo, data);
 }
 
+// devuelve la infromacion de un usuario en un string a un struct
 LoginData *utils_destruct_data_search(char *tramaDatos) {
     char delim[] = "*";
     char *ptr = strtok(tramaDatos, delim);
@@ -152,6 +157,7 @@ LoginData *utils_destruct_data_search(char *tramaDatos) {
     return loginData;
 }
 
+// se encarga de construir una trama con la informacion base
 void sendTrama(char * data, int clientFD) {
     char *tramaRespuesta = NULL;
     tramaRespuesta = utils_obtener_trama('L', data);
@@ -159,16 +165,14 @@ void sendTrama(char * data, int clientFD) {
     funciones_display("\nSend answer\n\n");
 }
 
+// envia por tramas el listado de usuarios
 char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios, int clientFD) {
     char *data = "";
     char *userData;
     char *dataAux;
     bool firstSend = true;
 
-    //asprintf(&data, "%d*", listadoUsuarios->total);
-
     // Usuarios
-
     for (int i = 0; i < listadoUsuarios->total; ++i) {
         asprintf(&userData, "%s*%d", listadoUsuarios->usuarios[i].nombre, listadoUsuarios->usuarios[i].id);
         asprintf(&dataAux, "%s%s", data, userData);
@@ -206,12 +210,14 @@ char *utils_crear_data_search(ListadoUsuarios *listadoUsuarios, int clientFD) {
     return data;
 }
 
+// gestiona la salida de un cliente del servidor
 void utils_salir() {
     close(listenFD);
     signal(SIGINT, SIG_DFL);
     raise(SIGINT);
 }
 
+// se encarga de crear sesiones por cada cliente
 int utils_gestor_de_sockets(Configuracion config) {
     int clientFD;
     struct sockaddr_in servidor;
@@ -248,7 +254,7 @@ int utils_gestor_de_sockets(Configuracion config) {
     }
 }
 
-
+// Envia una trama al servidor en caso de que el md5sum del fichero descargado y el del servidor sean identicos
 void utils_comparar_md5sum(int clientFD, char *trama, FotoData *fotoData, char *fileName) {
     char *md5File = funciones_generate_md5sum(fileName);
     if (strcmp(fotoData->md5sum, md5File) == 0) {

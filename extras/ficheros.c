@@ -7,6 +7,7 @@
 
 #define MAX_LINEA_FILE 200
 
+// Obtiene la informacion de configuracion incial a partir de un fichero
 int ficheros_leer(char *pathFile, Configuracion *configuracion) {
 
     int fd;
@@ -26,6 +27,7 @@ int ficheros_leer(char *pathFile, Configuracion *configuracion) {
     return 0;
 }
 
+// obtiene los usuarios registrados del txt en el que se guardan
 int ficheros_leer_usuarios_registrados(Usuarios * usuarios) {
 
     int fd;
@@ -66,6 +68,7 @@ int ficheros_leer_usuarios_registrados(Usuarios * usuarios) {
     return 0;
 }
 
+// Guarda los usuarios registrados que hay en el struct en el fichero txt
 int ficheros_guardar_usuarios_registrados(Usuarios * usuarios) {
     int fd;
     

@@ -4,16 +4,20 @@
 
 #include "funciones.h"
 
+// se le pasa un puntero y libera la memoria
 void funciones_liberar_memoria(void *ptr) {
     // Libermaos Memoria
     free(ptr);
     // Dejamos apuntando a NULL
     ptr = NULL;
 }
+
+// se le pasa un string y se muestra por pantalla
 void funciones_display(char *string) {
     write(1, string, sizeof(char) * strlen(string));
 }
 
+// devuelve un string hasta un caracter del parametro string
 char * funciones_read_string_to (char * string, char hasta) {
     int i = 0;
     char *aux = NULL;
@@ -37,18 +41,7 @@ char * funciones_read_string_to (char * string, char hasta) {
     return aux;
 }
 
-char * funciones_concat_strings_por_asterico(char * string1, char * string2) {
-    char * concatString = NULL;
-    int stringSize = strlen(string1) + strlen(string2) + 1;
-    concatString = malloc(stringSize * sizeof (char));
-
-    strcpy(concatString, string1);
-    strcat(concatString, "*");
-    strcat(concatString, string2);
-
-    return concatString;
-}
-
+// comprueba que los argumentos sean correctos
 int funciones_error_argumentos(int argc, char *argv[], int num_argumentos) {
 
     if (argc != num_argumentos) {
@@ -65,6 +58,7 @@ int funciones_error_argumentos(int argc, char *argv[], int num_argumentos) {
     }
 }
 
+// Verifica si se ha abierto correctamente el fichero
 int funciones_error_abrir(int fd) {
     // TODO: quitar estatico
     char aux[200];
@@ -78,30 +72,7 @@ int funciones_error_abrir(int fd) {
     }
 }
 
-void funciones_read_input(char **string) {
-    int i = 0;
-    char caracter = ' ';
-
-    // Bucle para leer caracteres entrados por teclado hasta Enter
-    while (caracter != '\n') {
-        // Lectura de caracter por caracter
-        read(0, &caracter, sizeof(char));
-
-        // TODO: Revisar esta ðŸ’©
-        // Redimensiona la cadena por cada caracter del usuario
-        *string = (char *) realloc(*string, (sizeof(char) * (i + 1)));
-
-        // Asigna el caracter a la cadena
-        (*string)[i] = caracter;
-
-        // Cuando el caracter sea un salto de linea (enter) marcamos el fianl de la cadena
-        if (caracter == '\n') {
-            (*string)[i] = '\0';
-        }
-        i++;
-    }
-}
-
+// devuelve un string hasta el caracter de la linea de un fichero
 char *funciones_read_line_file(int fd, char hasta) {
     int i = 0, size;
     char c = '\0';
@@ -124,6 +95,7 @@ char *funciones_read_line_file(int fd, char hasta) {
     return string;
 }
 
+// Verifica si es el final de un fichero
 int funciones_check_eof(int fd) {
     int num_bytes;
     char car;
@@ -142,6 +114,7 @@ int funciones_check_eof(int fd) {
     return 0;
 }
 
+// devuelve el size de un fichero
 int funciones_get_file_size(char *fileName) {
     struct stat sb;
 
@@ -153,6 +126,7 @@ int funciones_get_file_size(char *fileName) {
     return sb.st_size;
 }
 
+// obtiene el md5sum del fichero pasado por argumento
 char *funciones_generate_md5sum(char *string) {
     char *args[] = {"md5sum", string, 0};
     int fd = open(MD5FILE, O_CREAT | O_WRONLY, S_IRWXU);
@@ -179,6 +153,7 @@ char *funciones_generate_md5sum(char *string) {
     return md5String;
 }
 
+// envia una foto por tramas al cliente
 int funciones_send_image(int socket, char *fileName) {
     int picture;
 

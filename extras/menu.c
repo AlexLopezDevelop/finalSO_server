@@ -7,6 +7,7 @@
 #include "funciones.h"
 #include <stdbool.h>
 
+// se le pasa una trama y la devuelve la informacion en un struct
 ConexionData *ficheros_guardar_trama(const char *trama) {
     ConexionData *conexionData;
     conexionData = malloc(sizeof(ConexionData));
@@ -33,6 +34,7 @@ ConexionData *ficheros_guardar_trama(const char *trama) {
     return conexionData;
 }
 
+// se encarga de recibir las peticiones del cliente y ejecutar dicha funcionalidad en caso de que sea correcta
 void *menu_comprobar_nombres(void *arg) {
     int clientFD = *(int *) arg;
     int salir = 0;
@@ -84,13 +86,11 @@ void *menu_comprobar_nombres(void *arg) {
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                     break;
                 }
+
                 funciones_display("Buscando usuarios\n");
                 ListadoUsuarios *listadoUsuarios = menu_opcion_buscar_usuario(conexionData);
                 if (listadoUsuarios->total != 0) {
                     utils_crear_data_search(listadoUsuarios, clientFD);
-                    /*tramaRespuesta = utils_obtener_trama('L', data);
-                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    funciones_display("\nSend answer\n\n");*/
                 } else {
                     tramaRespuesta = utils_obtener_trama('K', "0");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
@@ -108,13 +108,13 @@ void *menu_comprobar_nombres(void *arg) {
                 funciones_display(printf);
                 asprintf(&printf,"%d\n", loginData->id);
                 funciones_display(printf);
-                //asprintf(&printf, "%s de %s %d\n", fotoData->nombre, loginData->nombre, loginData->id);
-                //funciones_display(printf);
 
                 bool descargandoImagen = true;
                 char tramaImagen[MAX_TRAMA_SIZE];
 
                 fotoData->totalTramas = fotoData->size / TRAMA_DATA_SIZE;
+
+                // revisamos si tiene una trama de menos de TRAMA_DATA_SIZE le sumamos una trama mas a recibir
                 if (fotoData->size % TRAMA_DATA_SIZE != 0) {
                     fotoData->totalTramas++;
                 }
@@ -122,8 +122,10 @@ void *menu_comprobar_nombres(void *arg) {
                 char *imageName;
                 asprintf(&imageName, "%d.jpg", loginData->id);
 
+                // en caso de existir ya la imagen borra la antigua
                 remove(imageName);
 
+                // mientras no se reciban todas las tramas
                 while (descargandoImagen) {
                     memset(tramaImagen, 0, TRAMA_DATA_SIZE);
                     memset(conexionData, 0, sizeof(ConexionData));
@@ -160,38 +162,12 @@ void *menu_comprobar_nombres(void *arg) {
                 funciones_display(imageName);
                 funciones_display("\n\n");
                 break;
-            case 'D':
-
-                //getImageFromClient(fotoData, conexionData, clientFD);
-
-                /*if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas+4) == i) {
-                    write(fd, conexionData->datos, sizeof (char) * (fotoData->size % TRAMA_DATA_SIZE));
-                    //i=0;
-                } else {
-                    write(fd, conexionData->datos, TRAMA_DATA_SIZE);
-                    i++;
-                }
-
-                if (i == (fotoData->totalTramas+4) && !error) {
-                    tramaRespuesta = utils_obtener_trama('I', "IMATGE OK");
-                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    asprintf(&printf, "Guardada com %d.jpg\n\n", loginData->id);
-                    funciones_display(printf);
-                    close(fd);
-                } else if (i == (fotoData->totalTramas-1) && error) {
-                    tramaRespuesta = utils_obtener_trama('R', "IMATGE KO");
-                    write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
-                    funciones_display("Error File not found\n");
-                }*/
-
-                break;
             case 'P': //photo
                 funciones_display("Recieved photo ");
                 char *printphoto;
                 asprintf(&printphoto, "%s de %s %d\n", conexionData->datos, loginData->nombre, loginData->id);
                 funciones_display(printphoto);
 
-                // TODO: quitar estatico
                 char sizeFileString[100];
 
                 char *imagePath;
@@ -230,9 +206,6 @@ void *menu_comprobar_nombres(void *arg) {
 
                 break;
             case 'Q':   //logout
-                if (!usuario_existe(loginData)) {
-                    // TODO: enviar error al cliente y romper el fujo (return/break)
-                }
                 usuario_mensaje_desconectado(conexionData->datos);
                 funciones_display("Cliente Desconectado!\n\n");
                 close(clientFD);
@@ -256,11 +229,11 @@ void *menu_comprobar_nombres(void *arg) {
     return NULL;
 }
 
+// muestra los usuarios con el mismo codigo postal
 ListadoUsuarios *menu_opcion_buscar_usuario(ConexionData *conexionData) {
     LoginData *loginData = utils_destruct_data_search(conexionData->datos);
     ListadoUsuarios *listadoUsuarios = usuario_buscar_registrados(loginData);
 
-    // TODO: quitar estatico
     char print[200];
     char auxid[30];
 
