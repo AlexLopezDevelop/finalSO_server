@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    utils_gestor_de_sockets();
+    utils_gestor_de_sockets(configAtreides);
 
     return 0;
 }

@@ -212,7 +212,7 @@ void utils_salir() {
     raise(SIGINT);
 }
 
-int utils_gestor_de_sockets() {
+int utils_gestor_de_sockets(Configuracion config) {
     int clientFD;
     struct sockaddr_in servidor;
 
@@ -223,7 +223,7 @@ int utils_gestor_de_sockets() {
     }
 
     bzero(&servidor, sizeof(servidor));
-    servidor.sin_port = htons(8755);
+    servidor.sin_port = htons(config.puerto);
     servidor.sin_family = AF_INET;
     servidor.sin_addr.s_addr = htonl(INADDR_ANY);
 

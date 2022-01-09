@@ -11,7 +11,7 @@
 
 void utils_salir();
 
-int utils_gestor_de_sockets();
+int utils_gestor_de_sockets(Configuracion config);
 
 char * utils_concatenar_strings(char **instruccion);
 

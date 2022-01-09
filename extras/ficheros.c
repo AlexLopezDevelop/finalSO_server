@@ -10,7 +10,6 @@
 int ficheros_leer(char *pathFile, Configuracion *configuracion) {
 
     int fd;
-    char lineaFile[250];
 
     fd = open(pathFile, O_RDONLY);
 
@@ -19,14 +18,9 @@ int ficheros_leer(char *pathFile, Configuracion *configuracion) {
     }
 
     while (!funciones_check_eof(fd)) {
-        strcpy(lineaFile, funciones_read_line_file(fd, '\n'));
-        configuracion->ip = malloc(sizeof(char) * strlen(lineaFile) + 1);
-        strcpy(configuracion->ip, funciones_read_line_file(fd, '\n'));
+        configuracion->ip = funciones_read_line_file(fd, '\n');
         configuracion->puerto = atoi(funciones_read_line_file(fd, '\n'));
-        strcpy(lineaFile, funciones_read_line_file(fd, '\n'));
-        configuracion->directorio = malloc(sizeof(char) * strlen(lineaFile) + 1);
-        strcpy(configuracion->directorio, funciones_read_line_file(fd, '\n'));
-
+        configuracion->directorio = funciones_read_line_file(fd, '\n');
     }
 
     return 0;
