@@ -74,8 +74,8 @@ void *menu_comprobar_nombres(void *arg) {
                 write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
                 funciones_display("Send answer\n\n");
 
-                funciones_liberar_memoria(loginData->nombre);
-                funciones_liberar_memoria(loginData->codigoPostal);
+                //funciones_liberar_memoria(loginData->nombre);
+                //funciones_liberar_memoria(loginData->codigoPostal);
                 //funciones_liberar_memoria(loginData);
                 break;
             case 'S':  //search
@@ -102,8 +102,14 @@ void *menu_comprobar_nombres(void *arg) {
 
                 fotoData = utils_destruct_data_imagen(conexionData->datos);
                 char *printf;
-                asprintf(&printf, "%s de %s %d\n", fotoData->nombre, loginData->nombre, loginData->id);
+                asprintf(&printf,"%s", fotoData->nombre);
                 funciones_display(printf);
+                asprintf(&printf," de %s ", loginData->nombre);
+                funciones_display(printf);
+                asprintf(&printf,"%d\n", loginData->id);
+                funciones_display(printf);
+                //asprintf(&printf, "%s de %s %d\n", fotoData->nombre, loginData->nombre, loginData->id);
+                //funciones_display(printf);
 
                 bool descargandoImagen = true;
                 char tramaImagen[MAX_TRAMA_SIZE];
@@ -149,6 +155,10 @@ void *menu_comprobar_nombres(void *arg) {
 
                     close(fd);
                 }
+
+                funciones_display("Saved as ");
+                funciones_display(imageName);
+                funciones_display("\n\n");
                 break;
             case 'D':
 

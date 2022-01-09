@@ -38,7 +38,7 @@ ConexionData *utils_guardar_trama(const char *trama) {
             conexionData->datos[dataIndex] = trama[i];
             dataIndex++;
             if (trama[i] == '\0') {
-                break;
+                return conexionData;
             }
         }
     }
@@ -56,8 +56,10 @@ FotoData *utils_destruct_data_imagen(char *datos) {
         ptr = strtok(NULL, delim);
         fotoData->size = atoi(ptr);
         ptr = strtok(NULL, delim);
-        fotoData->md5sum = strdup(ptr);
-        ptr = strtok(NULL, delim);
+        if(ptr != NULL) {
+            fotoData->md5sum = strdup(ptr);
+            ptr = strtok(NULL, delim);
+        }
     }
 
     fotoData->sizeTrama = fotoData->size / TRAMA_DATA_SIZE;
@@ -69,32 +71,15 @@ FotoData *utils_destruct_data_imagen(char *datos) {
 
 LoginData *utils_destruct_data(char *datos) {
     LoginData *loginData = malloc(sizeof(LoginData));
-    loginData->nombre = malloc(sizeof(char));
-    loginData->codigoPostal = malloc(sizeof(char));
 
-    int isCodigoPostal = false;
-    int cpIndex = 0;
-    int sizeDatos = strlen(datos);
+    char delim[] = "*";
+    char *ptr = strtok(datos, delim);
 
-    for (int i = 0; i < sizeDatos; ++i) {
-        if (datos[i] == '*') {
-            loginData->nombre[i] = '\0';
-            isCodigoPostal = true;
-            i++;
-        }
-
-        if (!isCodigoPostal) {
-            loginData->nombre[i] = datos[i];
-            loginData->nombre = realloc(loginData->nombre, sizeof(char) * (i + 2));
-        } else {
-            loginData->codigoPostal[cpIndex] = datos[i];
-            loginData->codigoPostal = realloc(loginData->codigoPostal, sizeof(char) * (cpIndex + 2));
-            cpIndex++;
-            if (i + 1 == sizeDatos) { // final del string
-                loginData->codigoPostal[cpIndex] = '\0';
-            }
-        }
-
+    while (ptr != NULL) {
+        loginData->nombre = strdup(ptr);
+        ptr = strtok(NULL, delim);
+        loginData->codigoPostal = strdup(ptr);
+        ptr = strtok(NULL, delim);
     }
 
     return loginData;
