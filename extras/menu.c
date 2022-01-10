@@ -123,7 +123,15 @@ void *menu_comprobar_nombres(void *arg) {
                 asprintf(&imageName, "%d.jpg", loginData->id);
 
                 // en caso de existir ya la imagen borra la antigua
-                remove(imageName);
+                //remove(imageName);
+
+                int fd;
+
+                fd = open(imageName, O_WRONLY | O_CREAT | O_TRUNC, 00666);
+
+                if (funciones_error_abrir(fd)) {
+                    funciones_display("Error al guardar la imagen\n");
+                }
 
                 // mientras no se reciban todas las tramas
                 while (descargandoImagen) {
@@ -132,14 +140,6 @@ void *menu_comprobar_nombres(void *arg) {
 
                     read(clientFD, tramaImagen, MAX_TRAMA_SIZE);
                     conexionData = ficheros_guardar_trama(tramaImagen);
-
-                    int fd;
-
-                    fd = open(imageName, O_WRONLY | O_CREAT | O_APPEND, 00666);
-
-                    if (funciones_error_abrir(fd)) {
-                        funciones_display("Error al guardar la imagen\n");
-                    }
 
                     if (fotoData->size % TRAMA_DATA_SIZE != 0 && (fotoData->totalTramas-1) == i) {
                         write(fd, conexionData->datos, sizeof(char) * (fotoData->size % TRAMA_DATA_SIZE));
@@ -155,8 +155,10 @@ void *menu_comprobar_nombres(void *arg) {
                         i++;
                     }
 
-                    close(fd);
+
                 }
+
+                close(fd);
 
                 funciones_display("Saved as ");
                 funciones_display(imageName);
