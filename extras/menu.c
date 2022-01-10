@@ -249,7 +249,7 @@ ListadoUsuarios *menu_opcion_buscar_usuario(ConexionData *conexionData) {
     if (listadoUsuarios->total == 0) {
         funciones_display("No hay ningun usuario con el codigo postal ");
         funciones_display(loginData->codigoPostal);
-        funciones_display("\n");
+        funciones_display("\n\n");
     } else {
         sprintf(print, "Hi han %d persones humanes a %s\n", listadoUsuarios->total, loginData->codigoPostal);
         funciones_display(print);
