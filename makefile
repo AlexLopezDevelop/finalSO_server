@@ -29,3 +29,6 @@ do:
 
 val:
 		valgrind --dsymutil=yes --tool=memcheck --leak-check=yes --show-reachable=yes --track-fds=yes ./Atreides.exe Config.dat
+
+tar:
+		tar cf Atreides.tar *.c extras/*.c extras/*.h modelos/*.h Config.dat makefile usuariosRegistrados.txt
