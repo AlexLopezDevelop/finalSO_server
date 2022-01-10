@@ -161,6 +161,9 @@ void *menu_comprobar_nombres(void *arg) {
                 funciones_display("Saved as ");
                 funciones_display(imageName);
                 funciones_display("\n\n");
+
+                funciones_liberar_memoria(printf);
+                funciones_liberar_memoria(imageName);
                 break;
             case 'P': //photo
                 funciones_display("Recieved photo ");
@@ -226,12 +229,6 @@ void *menu_comprobar_nombres(void *arg) {
     pthread_cancel(pthread_self());
     pthread_detach(pthread_self());
 
-
-    funciones_liberar_memoria(conexionData);
-    funciones_liberar_memoria(tramaRespuesta);
-    funciones_liberar_memoria(trama);
-    funciones_liberar_memoria(fotoData->nombre);
-    funciones_liberar_memoria(fotoData->md5sum);
     return NULL;
 }
 

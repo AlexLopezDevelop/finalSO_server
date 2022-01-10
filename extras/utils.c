@@ -264,4 +264,6 @@ void utils_comparar_md5sum(int clientFD, char *trama, FotoData *fotoData, char *
         trama = utils_obtener_trama('R', "IMAGE KO");
         write(clientFD, trama, MAX_TRAMA_SIZE);
     }
+
+    funciones_liberar_memoria(md5File);
 }
