@@ -179,7 +179,7 @@ void *menu_comprobar_nombres(void *arg) {
 
                 //check if file exist
                 if (funciones_error_abrir(picture)) {
-                    funciones_display("Error Opening Image File");
+                    funciones_display("Image not found\n\n");
 
                     tramaRespuesta = utils_obtener_trama('F', "FILE NOT FOUND");
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
@@ -187,7 +187,6 @@ void *menu_comprobar_nombres(void *arg) {
                 } else {
                     int sizeFile = funciones_get_file_size(imagePath);
                     sprintf(sizeFileString, "%d", sizeFile);
-                    funciones_display(sizeFileString);
 
                     char *md5File = funciones_generate_md5sum(imagePath);
 
@@ -198,6 +197,13 @@ void *menu_comprobar_nombres(void *arg) {
                     write(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
 
                     funciones_send_image(clientFD, imagePath);
+
+                    read(clientFD, tramaRespuesta, MAX_TRAMA_SIZE);
+                    if (tramaRespuesta[15] == 'I') {
+                        funciones_display("Foto enviada amb èxit a Fremen.\n\n");
+                    } else if (tramaRespuesta[15] == 'R') {
+                        funciones_display("Error foto no enviada a Fremen.\n\n");
+                    }
 
                     //funciones_liberar_memoria(imagePath);
                     //funciones_liberar_memoria(md5File);
@@ -237,7 +243,7 @@ ListadoUsuarios *menu_opcion_buscar_usuario(ConexionData *conexionData) {
     char print[200];
     char auxid[30];
 
-    sprintf(print, "Rebut search %s de %s %d\nFeta la cerca\n", loginData->codigoPostal, loginData->nombre,
+    sprintf(print, "Received search %s de %s %d\nFeta la cerca\n", loginData->codigoPostal, loginData->nombre,
             loginData->id);
     funciones_display(print);
 

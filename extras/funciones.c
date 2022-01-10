@@ -60,7 +60,6 @@ int funciones_error_argumentos(int argc, char *argv[], int num_argumentos) {
 
 // Verifica si se ha abierto correctamente el fichero
 int funciones_error_abrir(int fd) {
-    // TODO: quitar estatico
     char aux[200];
 
     if (fd < 0) {
@@ -177,7 +176,6 @@ int funciones_send_image(int socket, char *fileName) {
 
     close(picture);
 
-    funciones_display("Foto Enviada");
     return 0;
 }
 

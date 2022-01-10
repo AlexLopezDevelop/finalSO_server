@@ -133,7 +133,7 @@ void usuario_mensaje_desconectado(char *datos) {
         indexId++;
         id = realloc(id, sizeof(char) * indexId);
     }
-    sprintf(print, "Rebut logout de %s %s\n", nombre, id);
+    sprintf(print, "Received logout de %s %s\n", nombre, id);
     funciones_display(print);
 
     funciones_liberar_memoria(nombre);

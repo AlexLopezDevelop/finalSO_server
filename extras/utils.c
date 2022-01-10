@@ -260,5 +260,8 @@ void utils_comparar_md5sum(int clientFD, char *trama, FotoData *fotoData, char *
     if (strcmp(fotoData->md5sum, md5File) == 0) {
         trama = utils_obtener_trama('I', "IMAGE OK");
         write(clientFD, trama, MAX_TRAMA_SIZE);
+    } else {
+        trama = utils_obtener_trama('R', "IMAGE KO");
+        write(clientFD, trama, MAX_TRAMA_SIZE);
     }
 }
